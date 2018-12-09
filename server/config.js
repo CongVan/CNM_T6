@@ -1,0 +1,11 @@
+module.exports={
+    'secret':'SECRET_KEY',
+    'keyMap':'AIzaSyBVXo0bnqRZwCW0kups3AFnu9LIuSWLwnA',
+    'reqNumber':2,
+    'roomAdmin':"Admin",
+    'roomDriver':"Driver",
+    'minRange':9000,
+    'stepRange':500,
+    'delayTime':5,//second
+    'expiredJWT':3600
+};
