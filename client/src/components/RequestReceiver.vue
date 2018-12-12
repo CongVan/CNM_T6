@@ -31,7 +31,7 @@
 	                    </div>
 
 	                    <div class="text-center mt-4 mb-2" @click="submitRequest()">
-	                        <button class="btn btn-primary">Gởi yêu cầu
+	                        <button class="btn btn-primary">Gửi yêu cầu
 	                    		<i class="fa fa-send ml-2"></i>
 	                		</button>
 	                    </div>
@@ -44,7 +44,17 @@
 
 <script>
 export default {
-    name:"RequestReceiver"
+    name:"RequestReceiver",
+    data() {
+        return {
+            request: {
+                customer_name: '',
+                customer_phone: '',
+                customer_address: '',
+                note: ''
+            }
+        }
+    },
 }
 </script>
 
