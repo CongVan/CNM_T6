@@ -55,6 +55,22 @@ export default {
             }
         }
     },
+
+    methods: {
+        submitRequest() {
+            
+        },
+        checkRequest() {
+            return !(this.request.customer_name == '' ||
+                this.request.customer_phone == '' ||
+                this.request.customer_address == '');
+        },
+        prefreshForm() {
+            this.request.customer_name = '';
+            this.request.customer_phone = '';
+            this.request.customer_address = '';
+        }
+    }
 }
 </script>
 
