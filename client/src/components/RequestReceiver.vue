@@ -58,7 +58,32 @@ export default {
 
     methods: {
         submitRequest() {
-            
+            var self = this;
+            if (self.checkRequest() == true) {
+                self.axios
+                    .post(
+                        `${Config.hostAPI}/request-receiver/add-request`,
+                        self.request
+                    )
+                    .then(res => {
+                        self.$toasted.show(res.data.msg, {
+                            theme: "bubble",
+                            position: "top-center",
+                            duration: 5000
+                        });
+                        // alert(res.data.msg);
+                        // this.$socket.emit('SendingRequest',self.currRequest);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    });
+            } else {
+                self.$toasted.show("Vui lòng nhập đủ dữ liệu!", {
+                    theme: "bubble",
+                    position: "top-center",
+                    duration: 5000
+                });
+            }
         },
         checkRequest() {
             return !(this.request.customer_name == '' ||
