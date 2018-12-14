@@ -4,47 +4,19 @@
             <div class="row mt-2">
 
                 <div class="col-md-4 col-sm-12">
-                    <h2 class="mb-1 text-primary">Danh sách yêu cầu <span class="badge  badge-danger badge-pill ">1</span></h2>
+                    <h2 class="mb-1 text-primary">Danh sách yêu cầu <span class="badge  badge-danger badge-pill ">{{lstRequest.length}}</span></h2>
                     <div class="row px-md-3 list-req ">
                         <div class="scrollbar scrollbar-lady-lips">
                             <div class="force-overflow"></div>
                         </div>
-                        <div :id="'item_id'" class="col-md-12  hoverable rounded pt-2 card mb-2">
+                        <div v-for=" req in lstRequest" :key="req.id" :id="'item'+req.id" class="col-md-12  hoverable rounded pt-2 card mb-2">
                             <p class="dark-grey-text mb-0 ">
-                                <strong><i class="fa fa-clock-o"></i>14/12/2018</strong>
-                                <strong class="ml-2 float-right text-primary"><i class="fa fa-phone"></i>0908327778</strong>
+                                <strong><i class="fa fa-clock-o"></i> {{req.create_date}}</strong>
+                                <strong class="ml-2 float-right text-primary"><i class="fa fa-phone"></i> {{req.customer_phone}}</strong>
                             </p>
                             <a>
-                                <span><i class="fa fa-user-circle-o text-info mr-1"></i>Mau Luu</span><br>
-                                <span><i class="fa fa-address-book-o text-info mr-1"></i>227 NVC Q5</span>
-                            </a>
-                            <div class="d-flex justify-content-between">
-                                <!-- <span><i class="fa fa-sticky-note-o text-info mr-1"></i> <span>{{req.note}}</span></span> -->
-
-                            </div>
-                        </div>
-                         <div :id="'item_id'" class="col-md-12  hoverable rounded pt-2 card mb-2">
-                            <p class="dark-grey-text mb-0 ">
-                                <strong><i class="fa fa-clock-o"></i>14/12/2018</strong>
-                                <strong class="ml-2 float-right text-primary"><i class="fa fa-phone"></i>0908327778</strong>
-                            </p>
-                            <a>
-                                <span><i class="fa fa-user-circle-o text-info mr-1"></i>Mau Luu</span><br>
-                                <span><i class="fa fa-address-book-o text-info mr-1"></i>227 NVC Q5</span>
-                            </a>
-                            <div class="d-flex justify-content-between">
-                                <!-- <span><i class="fa fa-sticky-note-o text-info mr-1"></i> <span>{{req.note}}</span></span> -->
-
-                            </div>
-                        </div>
-                         <div :id="'item_id'" class="col-md-12  hoverable rounded pt-2 card mb-2">
-                            <p class="dark-grey-text mb-0 ">
-                                <strong><i class="fa fa-clock-o"></i>14/12/2018</strong>
-                                <strong class="ml-2 float-right text-primary"><i class="fa fa-phone"></i>0908327778</strong>
-                            </p>
-                            <a>
-                                <span><i class="fa fa-user-circle-o text-info mr-1"></i>Mau Luu</span><br>
-                                <span><i class="fa fa-address-book-o text-info mr-1"></i>227 NVC Q5</span>
+                                <span><i class="fa fa-user-circle-o text-info mr-1"></i>{{req.customer_name}}</span><br>
+                                <span><i class="fa fa-address-book-o text-info mr-1"></i>{{req.customer_address}}</span>
                             </a>
                             <div class="d-flex justify-content-between">
                                 <!-- <span><i class="fa fa-sticky-note-o text-info mr-1"></i> <span>{{req.note}}</span></span> -->
@@ -74,9 +46,45 @@
 <script>
 export default {
     name:"LocationIdentifier",
+     data() {
+        return {
+            // default to Montreal to keep it simple
+            // change this to whatever makes sense
+            center: {
+                lat: 45.508,
+                lng: -73.587
+            },
+            google: null,
+            map: null,
+            geocoder: null,
+            marker: null,
+            infoWindow: null,
+            markers: [],
+            places: [],
+            lstRequest: [],
+            currRequest: null,
+            currAdsress: ""
+        };
+    },
      beforeCreate(){
         document.body.className = ` `;
     },
+    created() {
+        
+        this.getLocation();
+    },
+        methods: {
+        getLocation: function () {
+            var self = this;
+            this.axios
+                .get(`http://localhost:3000/request-receiver/get-requests`)
+                .then(response => {
+                    self.lstRequest = response.data;
+                    //console.log(self.lstRequest[0]);
+                })
+                .catch(function () {});
+        },
+    }
 }
 </script>
 
