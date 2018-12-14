@@ -41,8 +41,18 @@ router.post('/add-request', (req, res) => {
                 msg: ""+err
             });
         });
+});
 
-
+router.get('/get-requests', (req, res) => {
+  reqModel.GetRequests().then(rows => {
+      res.statusCode = 200;
+      res.json(rows);
+      // appIo.emit('messageTest',"Server gởi lại 123 123 1");
+  }).catch(err => {
+      console.log(err);
+      res.statusCode = 500;
+      res.end('View error log on server console');
+  });
 });
 
 module.exports = function (io) {

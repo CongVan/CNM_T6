@@ -1,4 +1,5 @@
 var connector = require('../connector/db-connector');
+var config = require('../config');
 
 exports.AddRequest = (m) => {
     return new Promise((resolve, reject) => {
