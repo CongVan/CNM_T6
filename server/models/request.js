@@ -61,7 +61,6 @@ exports.GetAllRequests = () => {
         // order by create_date desc
         //console.log(sql);
         connection.query(sql, (error, results, fields) => {
-
             if (error)
                 reject(error);
             else resolve(results);
