@@ -44,6 +44,7 @@
 </template>
 
 <script>
+import GoogleMapsLoader from "google-maps";
 export default {
     name:"LocationIdentifier",
      data() {
@@ -65,6 +66,38 @@ export default {
             currRequest: null,
             currAdsress: ""
         };
+    },
+    mounted() {
+        GoogleMapsLoader.KEY = "AIzaSyBVXo0bnqRZwCW0kups3AFnu9LIuSWLwnA";
+        GoogleMapsLoader.VERSION = "3.33";
+        GoogleMapsLoader.LIBRARIES = ["geometry", "places"];
+        GoogleMapsLoader.LANGUAGE = "vi";
+        // console.log("map: ", google.maps);
+        var self = this;
+        GoogleMapsLoader.load(function (google) {
+            var map = new google.maps.Map(document.getElementById("myMap"), {
+                zoom: 17,
+                center: {
+                    lat: 10.7637665802915,
+                    lng: 106.6825457802915
+                }
+            });
+
+            self.map = map;
+            // console.log('map',map);
+            self.geocoder = new google.maps.Geocoder();
+            self.marker = new google.maps.Marker({
+                map: map,
+                position: new google.maps.LatLng(10.7637665802915, 106.6825457802915),
+                draggable: true
+                // animation:google.maps.Animation.DROP
+            });
+            self.infoWindow = new google.maps.InfoWindow();
+            // console.log(self.google);
+            // console.log(self.map);
+            // console.log(self.geocoder);
+        });
+        // self.$socket.emit("message", "App2");
     },
      beforeCreate(){
         document.body.className = ` `;
