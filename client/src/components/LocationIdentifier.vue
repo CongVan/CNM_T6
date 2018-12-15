@@ -106,7 +106,7 @@ export default {
         
         this.getLocation();
     },
-        methods: {
+    methods: {   
         getLocation: function () {
             var self = this;
             this.axios
@@ -116,6 +116,68 @@ export default {
                     //console.log(self.lstRequest[0]);
                 })
                 .catch(function () {});
+        },
+        geocodeAddress(addr) {
+            var self = this;
+
+            var ad = addr.replace(/ /g, "+");
+            // var key = "AIzaSyBVXo0bnqRZwCW0kups3AFnu9LIuSWLwnA";
+            // var uri = `https://maps.googleapis.com/maps/api/geocode/json`;
+            self.geocoder.geocode({
+                    address: ad
+                },
+                function (results, status) {
+                    if (status == "OK") {
+                        if (results[0]) {
+                            // self.map.setZoom(14);
+                            self.marker.setPosition(results[0].geometry.location);
+                            // self.infoWindow.setContent(`<span>${results[0].formatted_address}</span>`);
+                            // self.infoWindow.open(self.map,self.marker);
+                            // self.center(self.marker.getPosition());
+                            self.map.setZoom(18);
+                            self.map.setCenter(results[0].geometry.location);
+                            self.currRequest.location_1 = JSON.stringify(
+                                results[0].geometry.location
+                            );
+                        }
+                    }
+                }
+            );
+
+            // self.axios.get(uri, {
+            //     params: {
+            //         address: ad,
+            //         key: key
+            //     }
+            // }).then(response => {
+            //     var adds = response.data.results;
+            //     // console.log(adds[0].geometry.location);
+            //     self.map.setCenter(adds[0].geometry.location);
+            //     self.map.setZoom(17);
+            //     // console.log('self',self);
+            //     // var marker = new self.google.maps.Marker({
+            //     //     map: self.map,
+            //     //     position: adds[0].geometry.location
+            //     // });
+            //     // console.log(self.marker);
+            //     self.marker.setPosition(adds[0].geometry.location);
+            //     self.marker.setTitle(adds[0].formatted_address);
+            //     // console.log(self.marker);
+            // }).catch(() => {
+
+            // });
+            // self.geocoder({'address':addr},function(results,status){
+            //     if(status==='OK'){
+            //         self.setCenter(results[0].geometry.location);
+            //         var marker=new self.google.maps.Marker({
+            //             map:self.map,
+            //             position:results[0].geometry.location
+            //         });
+            //         console.log(marker);
+            //     }else{
+            //         alert('Không tìm thấy vị trí'+status);
+            //     }
+            // });
         },
     }
 }
