@@ -55,4 +55,14 @@ router.get('/get-requests', (req, res) => {
   });
 });
 
+router.get('/get-all-requests', (req, res) => {
+    reqModel.GetAllRequests().then(rows => {
+        res.statusCode = 200;
+        res.json(rows);
+    }).catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.end('View error log on server console');
+    });
+});
 module.exports =    router;
