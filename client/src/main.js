@@ -4,6 +4,8 @@ import VueAxios from 'vue-axios'
 import App from '@/App.vue'
 import router from '@/router'
 import store from '@/store'
+import Toasted from 'vue-toasted';
+import Config from './config';
 
 Vue.config.productionTip = false
 Vue.use(VueAxios, axios);
@@ -12,3 +14,5 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
+
+Vue.use(Toasted);

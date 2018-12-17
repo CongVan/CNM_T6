@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import Config from '../config';
 export default {
     name:"RequestReceiver",
     data() {
