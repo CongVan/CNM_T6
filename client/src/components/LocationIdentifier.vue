@@ -45,6 +45,7 @@
 
 <script>
 import GoogleMapsLoader from "google-maps";
+import Config from '../config';
 export default {
     name:"LocationIdentifier",
      data() {
@@ -67,9 +68,29 @@ export default {
             currAdsress: ""
         };
     },
+    sockets: {
+        connect() {
+            // console.log('connected to chat server');
+            var data={
+                room:Config.roomAdmin,
+            }
+            this.$socket.emit("JoinRoom", data);
+        },
+        disconnected() {
+            console.log('disconected');
+        },
+        joinRoom(data) {
+            console.log(data);
+        },
+        refreshData(data) {
+            // this function gets triggered once a socket event of `message` is received
+            this.lstRequest = data; // append each new message to the textarea and add a line break
+            this.currRequest =this.lstRequest.length == 0 ? null : this.lstRequest[0];
+        }
+    },
     mounted() {
-        GoogleMapsLoader.KEY = "AIzaSyBVXo0bnqRZwCW0kups3AFnu9LIuSWLwnA";
-        GoogleMapsLoader.VERSION = "3.33";
+        GoogleMapsLoader.KEY = Config.keyMap;
+        GoogleMapsLoader.VERSION = Config.versionMap;
         GoogleMapsLoader.LIBRARIES = ["geometry", "places"];
         GoogleMapsLoader.LANGUAGE = "vi";
         // console.log("map: ", google.maps);
@@ -103,7 +124,8 @@ export default {
         document.body.className = ` `;
     },
     created() {
-        
+        this.$socket.close();
+        this.$socket.connect();
         this.getLocation();
     },
     methods: {
@@ -121,7 +143,7 @@ export default {
         getLocation: function () {
             var self = this;
             this.axios
-                .get(`http://localhost:3000/request-receiver/get-requests`)
+                .get(`${Config.hostAPI}/request-receiver/get-requests`)
                 .then(response => {
                     self.lstRequest = response.data;
                     //console.log(self.lstRequest[0]);

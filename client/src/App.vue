@@ -41,8 +41,6 @@
     </nav>
     <!--/.Navbar-->
     <router-view />
-    
-
 </div>
 </template>
 

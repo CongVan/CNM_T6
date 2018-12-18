@@ -1,7 +1,7 @@
 var express = require('express');
 var reqModel = require('../models/request');
 var router = express.Router();
-
+var appIo = null;
 var config = require('../config');
 
 /* GET home page. */
@@ -21,12 +21,12 @@ router.post('/add-request', (req, res) => {
                     result: 1,
                     msg: "Thành công"
                 });
-                // reqModel.GetRequests().then(rows => {
-                //     appIo.to(config.roomAdmin).emit('refreshData', rows);
-                // });
-                // reqModel.GetAllRequests().then(rows => {
-                //     appIo.to(config.roomAdmin).emit('refreshAllData', rows);
-                // });
+                reqModel.GetRequests().then(rows => {
+                    appIo.to(config.roomAdmin).emit('refreshData', rows);
+                });
+                reqModel.GetAllRequests().then(rows => {
+                    appIo.to(config.roomAdmin).emit('refreshAllData', rows);
+                });
             } else {
                 res.json({
                     result: -1,
@@ -65,4 +65,8 @@ router.get('/get-all-requests', (req, res) => {
         res.end('View error log on server console');
     });
 });
-module.exports =    router;
+module.exports =  function (io) {
+    appIo = io;
+
+    return router;
+}

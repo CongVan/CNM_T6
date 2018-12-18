@@ -5,17 +5,20 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 var bodyParser = require('body-parser');
-
+var io=require('./socketIO');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var reqRouter = require('./routes/reqest-receiver');
+var reqRouter = require('./routes/reqest-receiver')(io);
 var driver = require('./routes/driver');
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+
+app.io = io;
 
 app.use(cors());
 app.options('*', cors());  
