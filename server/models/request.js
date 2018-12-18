@@ -69,3 +69,21 @@ exports.GetAllRequests = () => {
         });
     });
 }
+exports.ConfirmLocationRequest = (m) => {
+    return new Promise((resolve, reject) => {
+        var connection = connector.getConnection();
+        connection.connect();
+        var sql = `
+        UPDATE request
+        SET confirm_status=2
+        where id=${m.id};`
+
+        connection.query(sql, (error, results) => {
+            if (error)
+                reject(error);
+            else resolve(results);
+            connection.end();
+        });
+
+    });
+}

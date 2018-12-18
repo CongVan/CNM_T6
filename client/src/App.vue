@@ -1,47 +1,89 @@
 <template>
-<div id="app">
+  <div id="app">
     <!--Navbar-->
     <nav class="navbar navbar-expand-lg navbar-dark  indigo darken-2">
+      <!-- Navbar brand -->
+      <a
+        class="navbar-brand active"
+        href="#"
+      >
+        Danh sách APP
+      </a>
 
-        <!-- Navbar brand -->
-        <a class="navbar-brand active" href="#">Danh sách APP</a>
+      <!-- Collapse button -->
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#basicExampleNav"
+        aria-controls="basicExampleNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon" />
+      </button>
 
-        <!-- Collapse button -->
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
-    aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-        <!-- Collapsible content -->
-        <div class="collapse navbar-collapse" id="basicExampleNav">
-
-            <!-- Links -->
-            <ul class="navbar-nav mr-auto">
-                <router-link tag="li" to="/ghi-nhan-yeu-cau" class="nav-item " active-class="active">
-                    <a class="nav-link text-capitalize " ><i class="fa fa-paper-plane-o"></i> ghi nhận yêu cầu</a>
-                </router-link>
-                <router-link tag="li" to="/xac-nhan-vi-tri" class="nav-item " active-class="active">
-                    <a class="nav-link text-capitalize" ><i class="fa fa-map-marker"></i> Xác nhận vị trí</a>
-                </router-link>
-                <router-link tag="li" to="/quan-ly-yeu-cau" class="nav-item " active-class="active">
-                    <a class="nav-link text-capitalize" ><i class="fa fa-th"></i> quản lý yêu cầu</a>
-                </router-link>
-                <router-link tag="li" to="/tai-xe" class="nav-item " active-class="active">
-                    <a class="nav-link text-capitalize" ><i class="fa fa-motorcycle"></i> tài xế</a>
-                </router-link>
-            </ul>
-            <ul class="navbar-nav">
-                <li class="nav-item ml-auto" >
-                    <a class="nav-link text-uppercase"><i class="fa fa-sign-out"></i> Đăng Xuất</a>
-                </li>
-            </ul>
-        </div>
-        <!-- Collapsible content -->
-
+      <!-- Collapsible content -->
+      <div
+        class="collapse navbar-collapse"
+        id="basicExampleNav"
+      >
+        <!-- Links -->
+        <ul class="navbar-nav mr-auto">
+          <RouterLink
+            tag="li"
+            to="/ghi-nhan-yeu-cau"
+            class="nav-item "
+            active-class="active"
+          >
+            <a class="nav-link text-capitalize ">
+              <i class="fa fa-paper-plane-o" /> ghi nhận yêu cầu
+            </a>
+          </RouterLink>
+          <RouterLink
+            tag="li"
+            to="/xac-nhan-vi-tri"
+            class="nav-item "
+            active-class="active"
+          >
+            <a class="nav-link text-capitalize">
+              <i class="fa fa-map-marker" /> Xác nhận vị trí
+            </a>
+          </RouterLink>
+          <RouterLink
+            tag="li"
+            to="/quan-ly-yeu-cau"
+            class="nav-item "
+            active-class="active"
+          >
+            <a class="nav-link text-capitalize">
+              <i class="fa fa-th" /> quản lý yêu cầu
+            </a>
+          </RouterLink>
+          <RouterLink
+            tag="li"
+            to="/tai-xe"
+            class="nav-item "
+            active-class="active"
+          >
+            <a class="nav-link text-capitalize">
+              <i class="fa fa-motorcycle" /> tài xế
+            </a>
+          </RouterLink>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item ml-auto">
+            <a class="nav-link text-uppercase">
+              <i class="fa fa-sign-out" /> Đăng Xuất
+            </a>
+          </li>
+        </ul>
+      </div>
+      <!-- Collapsible content -->
     </nav>
     <!--/.Navbar-->
-    <router-view />
-</div>
+    <RouterView />
+  </div>
 </template>
 
 <script>
