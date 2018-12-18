@@ -18,21 +18,46 @@
 </template>
 
 <script>
+import Config from '@/config'
 export default {
     name: "Driver",
     data() {
         return {
             user: {
                 id: 1,
+                status: 1,
+                location: 1,
             },
             isWaitting: false,
             isBusy: null,
+            oldLocationMarker: {
+                lat: null,
+                lng: null,
+            },
         };
     },
     methods: {
       startWaitting(){
-         var self = this;
-         self.isWaitting = true;
+        var self = this;
+        self.isWaitting = true;
+        self.user.status = 1;
+        self.user.location =  JSON.stringify(self.oldLocationMarker);
+        self.axios.post(`${Config.hostAPI}/driver/online`, self.user)
+                .then(res => {
+                    self.$toasted.show(res.data.msg, {
+                        theme: "primary",
+                        position: "top-right",
+                        duration: 5000
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                    self.$toasted.show(err, {
+                        theme: "primary",
+                        position: "top-right",
+                        duration: 5000
+                    });
+                });
       },
       stopWaitting(){
             var self = this;
