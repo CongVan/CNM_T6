@@ -65,6 +65,39 @@ router.get('/get-all-requests', (req, res) => {
         res.end('View error log on server console');
     });
 });
+router.post('/confirm-location-request', (req, res) => {
+    var m = req.body;
+    reqModel.ConfirmLocationRequest(m)
+        .then(results => {
+            var r = results.affectedRows;
+            if (r == 1) {
+                res.json({
+                    result: 1,
+                    msg: "Thành công"
+                });
+                reqModel.GetRequests().then(rows => {
+                    appIo.to(config.roomAdmin).emit('refreshData', rows);
+                });
+                reqModel.GetAllRequests().then(rows => {
+                    appIo.to(config.roomAdmin).emit('refreshAllData', rows);
+                });
+            } else {
+                res.json({
+                    result: -1,
+                    msg: "Thất bại"
+                });
+            }
+
+        })
+        .catch(err => {
+            rej.json({
+                result: -1,
+                msg: err
+            });
+        });
+
+
+});
 module.exports =  function (io) {
     appIo = io;
 

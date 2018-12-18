@@ -1,46 +1,66 @@
 <template>
-    <div>
-        <div class="container-fluid">
-            <div class="row mt-2">
-
-                <div class="col-md-4 col-sm-12">
-                    <h2 class="mb-1 text-primary">Danh sách yêu cầu <span class="badge  badge-danger badge-pill ">{{lstRequest.length}}</span></h2>
-                    <div class="row px-md-3 list-req ">
-                        <div class="scrollbar scrollbar-lady-lips">
-                            <div class="force-overflow"></div>
-                        </div>
-                        <div v-for=" req in lstRequest" :key="req.id" :id="'item'+req.id" class="col-md-12  hoverable rounded pt-2 card mb-2" @click="loadDetailReqest(req)" v-bind:class="{'blue lighten-5':activeReq(req.id)}">
-                            <p class="dark-grey-text mb-0 ">
-                                <strong><i class="fa fa-clock-o"></i> {{req.create_date}}</strong>
-                                <strong class="ml-2 float-right text-primary"><i class="fa fa-phone"></i> {{req.customer_phone}}</strong>
-                            </p>
-                            <a>
-                                <span><i class="fa fa-user-circle-o text-info mr-1"></i>{{req.customer_name}}</span><br>
-                                <span><i class="fa fa-address-book-o text-info mr-1"></i>{{req.customer_address}}</span>
-                            </a>
-                            <div class="d-flex justify-content-between">
-                                <!-- <span><i class="fa fa-sticky-note-o text-info mr-1"></i> <span>{{req.note}}</span></span> -->
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-8 col-sm-12">
-
-                    <div class="d-flex justify-content-between" v-if="currRequest">
-                        <span>
-                            <h3 class="text-primary"><i class="fa fa-map-marker mr-2"></i>{{currRequest.customer_address}}</h3>
-                            <span><i class="fa fa-sticky-note-o text-info mr-2"></i><span>{{currRequest.note}}</span></span>
-                        </span>
-
-                        <button type="button" class="btn btn-indigo btn-md"><i class="fa fa-check"></i> Xác nhận</button>
-                    </div>
-                    <div id="myMap"></div>
-
-                </div>
+  <div>
+    <div class="container-fluid">
+      <div class="row mt-2">
+        <div class="col-md-4 col-sm-12">
+          <h2 class="mb-1 text-primary">
+            Danh sách yêu cầu <span class="badge  badge-danger badge-pill ">
+              {{ lstRequest.length }}
+            </span>
+          </h2>
+          <div class="row px-md-3 list-req ">
+            <div class="scrollbar scrollbar-lady-lips">
+              <div class="force-overflow" />
             </div>
+            <div
+              v-for=" req in lstRequest"
+              :key="req.id"
+              :id="'item'+req.id"
+              class="col-md-12  hoverable rounded pt-2 card mb-2"
+              @click="loadDetailReqest(req)"
+              :class="{'blue lighten-5':activeReq(req.id)}"
+            >
+              <p class="dark-grey-text mb-0 ">
+                <strong><i class="fa fa-clock-o" /> {{ req.create_date }}</strong>
+                <strong class="ml-2 float-right text-primary">
+                  <i class="fa fa-phone" /> {{ req.customer_phone }}
+                </strong>
+              </p>
+              <a>
+                <span><i class="fa fa-user-circle-o text-info mr-1" />{{ req.customer_name }}</span><br>
+                <span><i class="fa fa-address-book-o text-info mr-1" />{{ req.customer_address }}</span>
+              </a>
+              <div class="d-flex justify-content-between">
+                <!-- <span><i class="fa fa-sticky-note-o text-info mr-1"></i> <span>{{req.note}}</span></span> -->
+              </div>
+            </div>
+          </div>
         </div>
+        <div class="col-md-8 col-sm-12">
+          <div
+            class="d-flex justify-content-between"
+            v-if="currRequest"
+          >
+            <span>
+              <h3 class="text-primary">
+                <i class="fa fa-map-marker mr-2" />{{ currRequest.customer_address }}
+              </h3>
+              <span><i class="fa fa-sticky-note-o text-info mr-2" /><span>{{ currRequest.note }}</span></span>
+            </span>
+
+            <button
+              type="button"
+              class="btn btn-indigo btn-md"
+              @click="submitConfirmLocation"
+            >
+              <i class="fa fa-check" /> Xác nhận
+            </button>
+          </div>
+          <div id="myMap" />
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -68,6 +88,7 @@ export default {
             currAdsress: ""
         };
     },
+    
     sockets: {
         connect() {
             // console.log('connected to chat server');
@@ -176,41 +197,28 @@ export default {
                     }
                 }
             );
-
-            // self.axios.get(uri, {
-            //     params: {
-            //         address: ad,
-            //         key: key
-            //     }
-            // }).then(response => {
-            //     var adds = response.data.results;
-            //     // console.log(adds[0].geometry.location);
-            //     self.map.setCenter(adds[0].geometry.location);
-            //     self.map.setZoom(17);
-            //     // console.log('self',self);
-            //     // var marker = new self.google.maps.Marker({
-            //     //     map: self.map,
-            //     //     position: adds[0].geometry.location
-            //     // });
-            //     // console.log(self.marker);
-            //     self.marker.setPosition(adds[0].geometry.location);
-            //     self.marker.setTitle(adds[0].formatted_address);
-            //     // console.log(self.marker);
-            // }).catch(() => {
-
-            // });
-            // self.geocoder({'address':addr},function(results,status){
-            //     if(status==='OK'){
-            //         self.setCenter(results[0].geometry.location);
-            //         var marker=new self.google.maps.Marker({
-            //             map:self.map,
-            //             position:results[0].geometry.location
-            //         });
-            //         console.log(marker);
-            //     }else{
-            //         alert('Không tìm thấy vị trí'+status);
-            //     }
-            // });
+        },
+        submitConfirmLocation() {
+            var self = this;
+            self.currRequest.location_2 = JSON.stringify(self.marker.getPosition());
+            self.axios
+                .post(
+                    `${Config.hostAPI}/request-receiver/confirm-location-request`,
+                    self.currRequest
+                )
+                .then(res => {
+                    self.$socket.emit('SendingRequest',self.currRequest);
+                    self.$toasted.show(res.data.msg, {
+                        theme: "bubble",
+                        position: "top-center",
+                        duration: 5000
+                    });
+                    // alert(res.data.msg);
+                    
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         },
     }
 }
