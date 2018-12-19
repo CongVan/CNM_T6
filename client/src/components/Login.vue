@@ -1,5 +1,5 @@
 <template>
-    <div id="login" class="">
+<div id="login" class="">
     <div class="container">
         <div class="row d-flex justify-content-center mt-3">
             <div class="col-md-6 col-sm-12 card">
@@ -34,8 +34,9 @@
 </template>
 
 <script>
+import Config from '@/config';
 export default {
-    name:"Login",
+    name: "Login",
     data() {
         return {
             userName: "user1",
@@ -47,16 +48,45 @@ export default {
 
             var self = this;
             if (self.userName.length > 0 && self.password.length > 0) {
-                console.log(self.userName,self.password);
+                var url = Config.hostAPI + '/driver/login';
+                var user = {
+                    'user_name': self.userName,
+                    'password': self.password
+                }
+                self.axios.post(url, user)
+                    .then(res => {
+                        if (res.data.user) {
+                            self.$toasted.show("Đăng nhập thành công", {
+                                theme: "bubble",
+                                position: "top-center",
+                                duration: 5000
+                            });
+                            console.log(res.data.user);
+                        } else {
+                            self.$toasted.show("Tên đăng nhập/ mật khẩu không đúng", {
+                                theme: "bubble",
+                                position: "top-center",
+                                duration: 5000
+                            });
+                        }
+
+                        // if (self.$route.params.nextUrl != null) {
+                        //     self.$router.push(self.$route.params.nextUrl);
+                        // } else {
+
+                        // }
+                    }).catch(err => {
+                        console.log(err);
+                    });
 
             } else {
                 self.password = "";
                 self.$toasted.show("Tên đăng nhập/ mật khẩu không đúng", {
-                        theme: "bubble",
-                        position: "top-center",
-                        duration: 5000
-                    });
-                
+                    theme: "bubble",
+                    position: "top-center",
+                    duration: 5000
+                });
+
             }
         }
     }
