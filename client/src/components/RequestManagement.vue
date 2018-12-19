@@ -21,13 +21,63 @@
                         </a>
                     </div>
                     <div class="d-flex justify-content-end ">
-                        <button class="btn btn-link btn-sm shadow">Chi tiết</button>
-                        <button class="btn btn-indigo btn-sm waves-effect waves-light" v-if="req.confirm_status<=2" @click="findDriver(req)">Tìm tài xế</button>
+                        <button class="btn btn-link btn-sm shadow" @click="loadDetailRequest(req)" data-toggle="modal" data-target="#modalDetailRequest">Chi tiết</button>
+                        <button class="btn btn-indigo btn-sm waves-effect waves-light">Tìm tài xế</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <!-- MENU CHI TIET -->
+    <div class="modal fade top" id="modalDetailRequest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" 
+    aria-hidden="true" data-backdrop="false">
+        <!--Header -->
+        <div class="modal-dialog  modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header pt-2 pb-1  indigo white-text text-uppercase w-100">
+                    <h4 class="modal-title w-100" id="myModalLabel">Chi tiết chuyến xe</h4>
+                    <button type="button" class="close white-text" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body " style="over-flow:auto">
+                    <div class="row ">
+                        <div class="col-md-4 col-sm-12 card pt-2 mr-1 mb-2">
+                            <div v-if="selectedRequest!=null">
+                                <h6 class="mb-0 indigo-text font-weight-bold">Thông tin khách hàng</h6>
+                                <hr class="my-1 indigo text-right" style="width:50%;" align=left />
+                                <span class="mb-1 d-block"><i class="fa fa-phone-square text-info mr-1 "></i>Điện thoại: {{selectedRequest.customer_phone}} </span>
+                                <span class="mb-1 d-block"><i class="fa fa-user-circle-o text-info mr-1"></i>Họ tên: {{selectedRequest.customer_name}}</span>
+                                <span class="mb-1 d-block"><i class="fa fa-address-book-o text-info mr-1"></i>Địa chỉ: {{selectedRequest.customer_address}} </span>
+                                <span class="mb-1 d-block"><i class="fa fa-sticky-note text-info mr-1"></i>Ghi chú: {{selectedRequest.note}} </span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-12 card pt-2 mr-1 mb-2">
+                            <div v-if="selectedRequest!=null">
+                                <h6 class="mb-0 indigo-text font-weight-bold">Thông tin tài xế</h6>
+                                <hr class="my-1 indigo text-right" style="width:50%;" align=left />
+                                <span class="mb-1 d-block"><i class="fa fa-user-circle-o text-info mr-1"></i>Tài khoản: {{selectedRequest.user_name}}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-12 card pt-2 mr-1 mb-2">
+                            <div v-if="selectedRequest!=null">
+                                <h6 class="mb-0 indigo-text font-weight-bold">Thông tin chuyến xe</h6>
+                                 <hr class="my-1 indigo text-right" style="width:50%;" align=left />
+                                <span class="mb-1 d-block"><i class="fa fa-clock-o text-info mr-1 "></i>Tiếp nhận: {{selectedRequest.create_date}} </span> 
+                                <span class="mb-1 d-block"><i class="fa fa-clock-o text-info mr-1 "></i>Tài xế nhận: {{selectedRequest.driving_date}} </span>
+                                <span class="mb-1 d-block"><i class="fa fa-clock-o text-info mr-1"></i>Bắt đầu: {{selectedRequest.start_time}}</span>
+                                <span class="mb-1 d-block"><i class="fa fa-clock-o text-info mr-1"></i>Kết thúc: {{selectedRequest.end_time}} </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-outline-primary btn-sm" data-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--MENU CHI TIET -->
 </div>
 </template>
 
@@ -39,6 +89,7 @@ export default {
     data() {
         return {
             lstRequest: [],
+            selectedRequest: null,
             maxheight: 500
         }
     },
@@ -65,10 +116,6 @@ export default {
         loadDetailRequest(req) {
             var self = this;
             self.selectedRequest = req;
-            if (req.user_name != null) {
-                self.drawDirection();
-            }
-
         },
     }
 }
