@@ -73,7 +73,7 @@
         </ul>
         <ul class="navbar-nav">
           <li class="nav-item ml-auto">
-            <a class="nav-link text-uppercase">
+            <a class="nav-link text-uppercase"  v-bind:class="{'hidden':!isLogin}" @click="logOut">
               <i class="fa fa-sign-out" /> Đăng Xuất
             </a>
           </li>
@@ -87,8 +87,66 @@
 </template>
 
 <script>
+import Config from './config';
+import axios from 'axios';
+import EventBus from '@/eventBus';
 export default {
     name: "App",
+    data() {
+        return {
+            isLogin: this.$store.getters.getStatusLogin,
+        }
+    },
+created() {
+        // console.log('b',this.isLogin);
+        var self = this;
+        EventBus.$on('logged', () => {
+            // console.log(data);
+            self.isLogin = true;
+            self.$store.dispatch("updateStatusLogin", true);
+        });
+        // var user = localStorage.getItem('user');
+        // var jwt = localStorage.getItem('jwt');
+        var jwt = self.$store.getters.getToken;
+        // console.log(user);
+        // console.log(jwt);
+        axios.get(`${Config.hostAPI}/driver/valid-token`, {
+                headers: {
+                    'x-access-token': jwt
+                }
+            }).then((res) => {
+                // console.log(res);
+                if (res.data.status == 1) { //logined
+                    self.isLogin = true;
+                    self.$store.dispatch("updateStatusLogin", true);
+                } else {
+                    self.$store.dispatch("updateStatusLogin", false);
+                    self.isLogin = false;
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        // if (user != null && jwt != null) {
+        //     this.isLogin = true;
+        // } else {
+        //     this.isLogin = false;
+        // }
+        // console.log('a',this.isLogin);
+    },
+    methods: {
+        logOut() {
+            var self = this;
+            self.isLogin = false;
+            localStorage.removeItem('user');
+            localStorage.removeItem('jwt');
+            self.$store.dispatch("logout");
+            self.$router.push({
+                name: "Login"
+            });
+        },
+
+    }
 };
 </script>
 

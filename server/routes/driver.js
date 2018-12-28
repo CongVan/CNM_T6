@@ -8,32 +8,60 @@ router.get('/', function (req, res, next) {
     res.json({ status: 'oK' })
 });
 
-
-router.post('/online', (req, res) => {
-    var d = req.body;
-    driverModel.online(d)
-        .then(results => {
-            var r = results.affectedRows;
-            if (r == 1) {
+var verifyAccessToken = (req, res, next) => {
+    console.log(req.headers);
+    // if(req.Url.pathname=='/driver/login'){
+    //   next();
+    // }
+    var token = req.headers["x-access-token"];
+    if (token) {
+        jwt.verify(token, config.secret, (err, payload) => {
+            if (err) {
+                res.statusCode = 403;
                 res.json({
-                    result: 1,
-                    msg: "ONLINE thành công"
+                    msg: "Invalid Token",
+                    err: err
                 });
             } else {
-                res.json({
-                    result: -1,
-                    msg: "ONLINE thất bại"
-                });
+                console.log(payload);
+                req.payload = payload;
+                next();
             }
-        })
-        .catch(err => {
-            res.json({
-                result: -1,
-                msg: "" + err
-            });
         });
+    } else {
+        res.statusCode = 403;
+        res.json({
+            msg: "Không có token"
+        });
+    }
+}
+router.get('/valid-token', function (req, res, next) {
+    var token = req.headers["x-access-token"];
+    if (token) {
+        jwt.verify(token, config.secret, (err, payload) => {
+            if (err) {
+                res.statusCode = 204;
+                res.json({
+                    status: -1,
+                    msg: "Invalid Token",
+                    err: err
+                });
+            } else {
+                res.statusCode = 200;
+                res.json({
+                    status: 1,
+                    msg: "OK",
+                })
+            }
+        });
+    } else {
+        res.statusCode = 204;
+        res.json({
+            status: -1,
+            msg: "Không có token"
+        });
+    }
 });
-
 router.post('/login', function (req, res, next) {
     var d = req.body;
     driverModel.Login(d)
@@ -64,4 +92,31 @@ router.post('/login', function (req, res, next) {
             console.log('login', error);
         });
 });
+
+router.post('/online', (req, res) => {
+    var d = req.body;
+    driverModel.online(d)
+        .then(results => {
+            var r = results.affectedRows;
+            if (r == 1) {
+                res.json({
+                    result: 1,
+                    msg: "ONLINE thành công"
+                });
+            } else {
+                res.json({
+                    result: -1,
+                    msg: "ONLINE thất bại"
+                });
+            }
+        })
+        .catch(err => {
+            res.json({
+                result: -1,
+                msg: "" + err
+            });
+        });
+});
+
+
 module.exports = router;

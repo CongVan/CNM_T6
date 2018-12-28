@@ -35,6 +35,7 @@
 
 <script>
 import Config from '@/config';
+import EventBus from '@/eventBus';
 export default {
     name: "Login",
     data() {
@@ -56,6 +57,29 @@ export default {
                 self.axios.post(url, user)
                     .then(res => {
                         if (res.data.user) {
+                            self.$store.dispatch("logined", res.data);
+                            var nameRouter = "Driver";
+                            switch (res.data.user.role) {
+                                case 1:
+                                    nameRouter = "RequestReceiver";
+                                    break;
+                                case 2:
+                                    nameRouter = "LocationIdentifier";
+                                    break;
+                                case 3:
+                                    nameRouter = "RequestManagement";
+                                    break;
+                                case 4:
+                                    nameRouter = "Driver";
+                                    break;
+                                default:
+                                    nameRouter = "Driver";
+                                    break;
+                            }
+                            EventBus.$emit('logged');
+                            self.$router.push({
+                                name: nameRouter
+                            });
                             self.$toasted.show("Đăng nhập thành công", {
                                 theme: "bubble",
                                 position: "top-center",
