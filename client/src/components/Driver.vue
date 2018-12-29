@@ -5,12 +5,15 @@
             <!-- <div class="col-md-3 col-sm-12  d-flex justify-content-center mb-1">
                 <button class="btn btn-block" >Bắt đầu</button>
             </div> -->
-            <div class="col-md-3 col-sm-12  d-flex justify-content-center mb-1">
+            <div class="col-md-3 col-sm-12  d-flex justify-content-center mb-1" v-if="isBusy!=null">
+                <button class="btn btn-block" v-bind:class="{'btn-success':isBusy==1,'btn-danger':isBusy==2}"  @click="startDriving" >{{statusButtonStart()}}</button>
+            </div>
+            <div class="col-md-3 col-sm-12  d-flex justify-content-center mb-1" v-if="isBusy==null">
                 <button class="btn btn-primary btn-block" @click="startWaitting" :disabled="isWaitting" v-if="isBusy==null">{{isWaitting?"Đang online....":"Nhận khách"}}</button>
             </div>
-            <div class="col-md-3 col-sm-12  d-flex justify-content-center  mb-1">
-                <button class="btn btn-danger btn-block" @click="stopWaitting" v-if="isWaitting==true" >Hủy</button>
-                <button class="btn btn-danger btn-block" v-if="isWaitting==false">Thay đổi vị trí</button>
+            <div class="col-md-3 col-sm-12  d-flex justify-content-center  mb-1" v-if="isBusy==null"> 
+                <button class="btn btn-danger btn-block" @click="stopWaitting" v-if="isWaitting==true && isBusy==null" >Hủy</button>
+                <button class="btn btn-danger btn-block" @click="showMap=!showMap" v-if="isWaitting==false && isBusy==null ">{{showMap?'Ẩn bản đồ':'Hiện bản đồ'}}</button>
             </div>
         </div>
         <div class="row mb-2 d-flex justify-content-center">
@@ -24,6 +27,7 @@
             </div>
         </div>
     </div>
+    <button id="btnConfirm" class="btn btn-primary btn-sm float-right mx-0 waves-effect waves-light " hidden data-toggle="modal" data-target="#modalDetailRequest">Xác nhận</button>
     <div class="modal fade right" id="modalDetailRequest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
         <div class="modal-dialog " role="document">
@@ -160,7 +164,7 @@ export default {
                     self.initMap();
                 } else {
                     self.$toasted.show("Ứng dụng không hỗ trợ vị trí", {
-                        theme: "primary",
+                        theme: "bubble",
                         position: "top-left",
                         duration: 5000
                     });
@@ -183,7 +187,7 @@ export default {
                         break;
                 }
                 self.$toasted.show(msg, {
-                    theme: "primary",
+                    theme: "bubble",
                     position: "top-left",
                     duration: 5000
                 });
@@ -306,6 +310,13 @@ export default {
                 document.getElementById('myMap').style.height = `${height-100}px`;
             });
         },
+        statusButtonStart() {
+            if (this.isBusy == 1) {
+                return 'Bắt đầu';
+            } else if (this.isBusy == 2) {
+                return 'Kết thúc';
+            }
+        },
         getCurrentPosition() {
             if (navigator.geolocation) {
                 return new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej));
@@ -318,17 +329,39 @@ export default {
             var self = this;
             self.setLocationMarker(self.currLocation);
         },
+        validLocation() {
+            var self = this;
+            var distance = self.google.maps.geometry.spherical.computeDistanceBetween(
+                new self.google.maps.LatLng(self.currLocation.lat, self.currLocation.lng),
+                new self.google.maps.LatLng(self.newLocationMarker.lat, self.newLocationMarker.lng)
+            );
+            var dtest = self.testhaversing(new self.google.maps.LatLng(self.currLocation.lat, self.currLocation.lng),
+                new self.google.maps.LatLng(self.newLocationMarker.lat, self.newLocationMarker.lng))
+            if (distance > self.zoneValid) {
+                self.setLocationMarker(self.oldLocationMarker);
+                self.$toasted.show(`Vị trí cập nhật không quá ${self.zoneValid}m so với mặc định`, {
+                    theme: "bubble",
+                    position: "top-left",
+                    duration: 2000
+                });
+            } else {
+                self.updateLocationDriver();
+            }
+            console.log(distance);
+            console.log(dtest);
+        },
         startWaitting() {
             var self = this;
             self.isWaitting = true;
             self.user.status = 1;
             self.user.location = JSON.stringify(self.oldLocationMarker);
+            self.marker.setDraggable(false);
             // console.log(self.user);
             // return;
             self.axios.post(`${Config.hostAPI}/driver/online`, self.user)
                 .then(res => {
                     self.$toasted.show(res.data.msg, {
-                        theme: "primary",
+                        theme: "bubble",
                         position: "top-right",
                         duration: 5000
                     });
@@ -336,7 +369,7 @@ export default {
                 .catch(err => {
                     console.log(err);
                     self.$toasted.show(err, {
-                        theme: "primary",
+                        theme: "bubble",
                         position: "top-right",
                         duration: 5000
                     });
@@ -345,6 +378,25 @@ export default {
         stopWaitting() {
             var self = this;
             self.isWaitting = !self.isWaitting;
+            self.marker.setDraggable(true);
+            self.user.status = 2;
+            self.axios.post(`${Config.hostAPI}/driver/offline`, self.user)
+                .then(res => {
+                    self.$toasted.show(res.data.msg, {
+                        theme: "bubble",
+                        position: "top-right",
+                        duration: 2000
+                    });
+                    // alert(res.data.msg);
+                })
+                .catch(err => {
+                    console.log(err);
+                    self.$toasted.show(err, {
+                        theme: "bubble",
+                        position: "top-right",
+                        duration: 2000
+                    });
+                });
         },
         setLocationMarker(pos) {
             var self = this;
@@ -362,7 +414,7 @@ export default {
             self.axios.post(`${Config.hostAPI}/driver/update-location`, self.user)
                 .then(res => {
                     self.$toasted.show(res.data.msg, {
-                        theme: "primary",
+                        theme: "bubble",
                         position: "top-right",
                         duration: 1000
                     });
@@ -371,7 +423,7 @@ export default {
                 .catch(err => {
                     console.log(err);
                     self.$toasted.show(err, {
-                        theme: "primary",
+                        theme: "bubble",
                         position: "top-right",
                         duration: 1000
                     });
@@ -380,6 +432,7 @@ export default {
         startDriving() {
             var self = this;
             if (self.isBusy == 1) {
+                self.marker.setDraggable(false);
                 self.isBusy = 2;
                 self.axios.post(`${Config.hostAPI}/request-receiver/update-status-request`, {
                         requestId: self.currentRequest.id,
@@ -391,13 +444,13 @@ export default {
                         console.log('update status', results);
                         if (results.data.result == 1) {
                             self.$toasted.show("Bắt đầu chuyến đi nào!", {
-                                theme: "primary",
+                                theme: "bubble",
                                 position: "top-right",
                                 duration: 2000
                             });
                         } else {
                             self.$toasted.show("Cập nhật trạng thái thất bại!", {
-                                theme: "primary",
+                                theme: "bubble",
                                 position: "top-right",
                                 duration: 2000
                             });
@@ -420,13 +473,13 @@ export default {
                         console.log('update status', results);
                         if (results.data.result == 1) {
                             self.$toasted.show("Hoàn thành chuyến đi!", {
-                                theme: "primary",
+                                theme: "bubble",
                                 position: "top-right",
                                 duration: 2000
                             });
                         } else {
                             self.$toasted.show("Cập nhật trạng thái thất bại!", {
-                                theme: "primary",
+                                theme: "bubble",
                                 position: "top-right",
                                 duration: 2000
                             });
@@ -454,7 +507,7 @@ export default {
                     self.directionsDisplay.setDirections(response);
                 } else {
                     self.$toasted.show("Không tìm thấy đường đi!", {
-                        theme: "primary",
+                        theme: "bubble",
                         position: "top-right",
                         duration: 2000
                     });
@@ -489,4 +542,30 @@ export default {
 </script>
 
 <style>
+.hiddenMap {
+    display: none;
+}
+
+/* .list-req {
+    max-height: 80vh;
+    overflow: auto;
+} */
+.active-modal {
+    padding-right: 15px;
+    display: block;
+}
+
+#myMap {
+    /* position: relative; */
+    /* height: 100% ; */
+    width: 100%;
+    /* max-height: 70%; */
+    /* height: 0;
+    overflow: hidden;
+    padding-bottom: 99%;
+    padding-top: 30px; */
+    /* width: 100%;
+     */
+    /* position: relative; */
+}
 </style>

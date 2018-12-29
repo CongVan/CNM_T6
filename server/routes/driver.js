@@ -92,7 +92,15 @@ router.post('/login', function (req, res, next) {
             console.log('login', error);
         });
 });
-
+router.get('/get-online', function (req, res, next) {
+    driverModel.getDriverOnline()
+        .then(rows => {
+            res.json({ result: 1, data: rows });
+        })
+        .catch(err => {
+            res.json({ result: -1, msg: err });
+        })
+});
 router.post('/online', (req, res) => {
     var d = req.body;
     driverModel.online(d)

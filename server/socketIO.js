@@ -1,9 +1,11 @@
 var socket_io = require("socket.io");
 var io = socket_io();
 var config = require('./config');
+var driver = require('./models/driver');
 var clientDB = require('./models/clientDB');
+var distance = require('google-distance-matrix');
 var config = require('./config');
-
+distance.key(config.keyMap);
 io.on('connection', function (socket) {
     // console.log("REQUEST_RECEIVER client connected");
     socket.on('JoinRoom', client => {

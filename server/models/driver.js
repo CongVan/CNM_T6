@@ -18,6 +18,47 @@ exports.Login = (driver) => {
         });
     });
 }
+exports.getDriverOnline = (lstUserNotConfirm) => {
+    return new Promise((resolve, reject) => {
+        var connection = connector.getConnection();
+        connection.connect();
+        var qUserNot = "";
+        if (lstUserNotConfirm.length > 0) {
+            qUserNot = ` AND id NOT IN (${lstUserNotConfirm.join(',')})`;
+        }
+        var sql = 'SELECT * FROM driver WHERE status=1 ' + qUserNot;
+         console.log(sql);
+        connection.query(sql, (error, results) => {
+
+            if (error)
+                reject(error);
+            else {
+                console.log(results);
+                resolve(results)
+            
+            };
+            connection.end();
+        });
+    });
+}
+exports.checkStatusConfirm = (requestId, userId) => {
+    return new Promise((resolve, reject) => {
+        var connection = connector.getConnection();
+        connection.connect();
+        var sql = `SELECT * FROM driver_request WHERE request_id='${requestId}' AND driver_id='${userId}'`;
+         console.log(sql);
+        connection.query(sql, (error, results) => {
+            if (error)
+                reject(error);
+            else if (results.length > 0) {
+                resolve(true);
+            } else {
+                resolve(false)
+            }
+            connection.end();
+        });
+    });
+}
 exports.online = (driver) => {
     return new Promise((resolve, reject) => {
         var connection = connector.getConnection();
