@@ -223,31 +223,31 @@ export default {
                 self.map = map;
                 // console.log('map',map);
                 var geocoder = new google.maps.Geocoder();
-                if (self.currLocation.lat == null) {
-                    geocoder.geocode({
-                            address: "Quan+1+,+Ho+Chi+Minh"
-                        },
-                        function (results, status) {
-                            if (status == "OK") {
-                                if (results[0]) {
-                                    self.currLocation.lat = results[0].geometry.location.lat;
-                                    self.currLocation.lng = results[0].geometry.location.lng;
-                                    self.oldLocationMarker = self.currLocation;
-                                    // self.map.setZoom(14);
-                                    // self.marker.setPosition(results[0].geometry.location);
-                                    // self.infoWindow.setContent(`<span>${results[0].formatted_address}</span>`);
-                                    // self.infoWindow.open(self.map,self.marker);
-                                    // self.center(self.marker.getPosition());
-                                    // self.map.setZoom(18);
-                                    self.map.setCenter(results[0].geometry.location);
-                                    // self.currRequest.location_1 = JSON.stringify(
-                                    //     results[0].geometry.location
-                                    // );
-                                }
-                            }
-                        }
-                    );
-                }
+                // if (self.currLocation.lat == null) {
+                //     geocoder.geocode({
+                //             address: "Quan+1+,+Ho+Chi+Minh"
+                //         },
+                //         function (results, status) {
+                //             if (status == "OK") {
+                //                 if (results[0]) {
+                //                     self.currLocation.lat = results[0].geometry.location.lat;
+                //                     self.currLocation.lng = results[0].geometry.location.lng;
+                //                     self.oldLocationMarker = self.currLocation;
+                //                     // self.map.setZoom(14);
+                //                     // self.marker.setPosition(results[0].geometry.location);
+                //                     // self.infoWindow.setContent(`<span>${results[0].formatted_address}</span>`);
+                //                     // self.infoWindow.open(self.map,self.marker);
+                //                     // self.center(self.marker.getPosition());
+                //                     // self.map.setZoom(18);
+                //                     self.map.setCenter(results[0].geometry.location);
+                //                     // self.currRequest.location_1 = JSON.stringify(
+                //                     //     results[0].geometry.location
+                //                     // );
+                //                 }
+                //             }
+                //         }
+                //     );
+                // }
                 self.marker = new google.maps.Marker({
                     map: map,
                     position: self.currLocation, //new google.maps.LatLng(self.currLocation.lat, self.currLocation.lng),
@@ -335,8 +335,9 @@ export default {
                 new self.google.maps.LatLng(self.currLocation.lat, self.currLocation.lng),
                 new self.google.maps.LatLng(self.newLocationMarker.lat, self.newLocationMarker.lng)
             );
-            var dtest = self.testhaversing(new self.google.maps.LatLng(self.currLocation.lat, self.currLocation.lng),
-                new self.google.maps.LatLng(self.newLocationMarker.lat, self.newLocationMarker.lng))
+             console.log(self.currLocation.lat,self.currLocation.lng);
+                console.log(self.newLocationMarker.lat,self.newLocationMarker.lng);
+                console.log(distance);
             if (distance > self.zoneValid) {
                 self.setLocationMarker(self.oldLocationMarker);
                 self.$toasted.show(`Vị trí cập nhật không quá ${self.zoneValid}m so với mặc định`, {
@@ -347,8 +348,8 @@ export default {
             } else {
                 self.updateLocationDriver();
             }
-            console.log(distance);
-            console.log(dtest);
+            // console.log(distance);
+            // console.log(dtest);
         },
         startWaitting() {
             var self = this;

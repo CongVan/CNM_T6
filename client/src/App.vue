@@ -1,17 +1,17 @@
 <template>
-  <div id="app">
+<div id="app">
     <!--Navbar-->
     <nav class="navbar navbar-expand-lg navbar-dark  indigo darken-2">
-      <!-- Navbar brand -->
-      <a
+        <!-- Navbar brand -->
+        <a
         class="navbar-brand active"
         href="#"
       >
         Danh sách APP
       </a>
 
-      <!-- Collapse button -->
-      <button
+        <!-- Collapse button -->
+        <button
         class="navbar-toggler"
         type="button"
         data-toggle="collapse"
@@ -23,67 +23,52 @@
         <span class="navbar-toggler-icon" />
       </button>
 
-      <!-- Collapsible content -->
-      <div
-        class="collapse navbar-collapse"
-        id="basicExampleNav"
-      >
-        <!-- Links -->
-        <ul class="navbar-nav mr-auto">
-          <RouterLink
-            tag="li"
-            to="/ghi-nhan-yeu-cau"
-            class="nav-item "
-            active-class="active"
-          >
-            <a class="nav-link text-capitalize ">
+        <!-- Collapsible content -->
+        <div class="collapse navbar-collapse" id="basicExampleNav">
+            <!-- Links -->
+            <ul class="navbar-nav mr-auto">
+                <RouterLink tag="li" to="/ghi-nhan-yeu-cau" class="nav-item " active-class="active">
+                    <a class="nav-link text-capitalize ">
               <i class="fa fa-paper-plane-o" /> ghi nhận yêu cầu
             </a>
-          </RouterLink>
-          <RouterLink
-            tag="li"
-            to="/xac-nhan-vi-tri"
-            class="nav-item "
-            active-class="active"
-          >
-            <a class="nav-link text-capitalize">
+                </RouterLink>
+                <RouterLink tag="li" to="/xac-nhan-vi-tri" class="nav-item " active-class="active">
+                    <a class="nav-link text-capitalize">
               <i class="fa fa-map-marker" /> Xác nhận vị trí
             </a>
-          </RouterLink>
-          <RouterLink
-            tag="li"
-            to="/quan-ly-yeu-cau"
-            class="nav-item "
-            active-class="active"
-          >
-            <a class="nav-link text-capitalize">
+                </RouterLink>
+                <RouterLink tag="li" to="/quan-ly-yeu-cau" class="nav-item " active-class="active">
+                    <a class="nav-link text-capitalize">
               <i class="fa fa-th" /> quản lý yêu cầu
             </a>
-          </RouterLink>
-          <RouterLink
-            tag="li"
-            to="/tai-xe"
-            class="nav-item "
-            active-class="active"
-          >
-            <a class="nav-link text-capitalize">
+                </RouterLink>
+                <RouterLink tag="li" to="/tai-xe" class="nav-item " active-class="active">
+                    <a class="nav-link text-capitalize">
               <i class="fa fa-motorcycle" /> tài xế
             </a>
-          </RouterLink>
-        </ul>
-        <ul class="navbar-nav">
-          <li class="nav-item ml-auto">
-            <a class="nav-link text-uppercase"  v-bind:class="{'hidden':!isLogin}" @click="logOut">
+                </RouterLink>
+            </ul>
+            <ul class="navbar-nav">
+                <!-- <li class="nav-item ml-auto">
+                    <a class="nav-link text-uppercase"  v-bind:class="{'hidden':!isLogin}" @click="logOut">
               <i class="fa fa-sign-out" /> Đăng Xuất
             </a>
-          </li>
-        </ul>
-      </div>
-      <!-- Collapsible content -->
+                </li> -->
+                <li class="nav-item dropdown ml-md-auto font-weight-bold">
+                    <a class="nav-link dropdown-toggle waves-effect waves-light" id="navbarDropdownMenuLink-4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+              <i class="fa fa-user-o "></i> {{user.user_name}} </a>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-info" aria-labelledby="navbarDropdownMenuLink-4">
+                        <!-- <a class="dropdown-item waves-effect waves-light" href="#">My account</a> -->
+                        <a class="dropdown-item waves-effect waves-light" href="#"><i class="fa fa-sign-out" /> Đăng Xuất</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- Collapsible content -->
     </nav>
     <!--/.Navbar-->
     <RouterView />
-  </div>
+</div>
 </template>
 
 <script>
@@ -95,15 +80,17 @@ export default {
     data() {
         return {
             isLogin: this.$store.getters.getStatusLogin,
+            user:this.$store.getters.getUser
         }
     },
-created() {
+    created() {
         // console.log('b',this.isLogin);
         var self = this;
         EventBus.$on('logged', () => {
             // console.log(data);
             self.isLogin = true;
             self.$store.dispatch("updateStatusLogin", true);
+            self.user=self.$store.getters.getUser
         });
         // var user = localStorage.getItem('user');
         // var jwt = localStorage.getItem('jwt');
@@ -157,5 +144,10 @@ created() {
 
 .hidden {
     display: none;
+}
+.dropdown-item:focus, .dropdown-item:hover{
+  background-color: #3d3393;
+  color: #fff!important;
+  box-shadow: 0 5px 11px 0 rgba(0,0,0,.18), 0 4px 15px 0 rgba(0,0,0,.15);
 }
 </style>

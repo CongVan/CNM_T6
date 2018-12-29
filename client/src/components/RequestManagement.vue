@@ -7,7 +7,7 @@
                 <div class="card hoverable rounded ">
                     <div class="card-body py-1 px-2">
                         <p class="dark-grey-text mb-0 ">
-                        <!-- <i class="fa fa-circle " v-bind:class="statusRequest(req.confirm_status)"></i> -->    
+                            <!-- <i class="fa fa-circle " v-bind:class="statusRequest(req.confirm_status)"></i> -->
                             <strong><i class="fa fa-clock-o"></i> {{req.create_date}} </strong>
                             <span class="badge  badge-danger  pull-right py-1" v-if="req.confirm_status==1">Chưa định vị</span>
                             <span class="badge  badge-default  pull-right py-1" v-if="req.confirm_status==2">Đã định vị</span>
@@ -23,15 +23,14 @@
                     </div>
                     <div class="d-flex justify-content-end ">
                         <button class="btn btn-link btn-sm shadow" @click="loadDetailRequest(req)" data-toggle="modal" data-target="#modalDetailRequest">Chi tiết</button>
-                        <button class="btn btn-indigo btn-sm waves-effect waves-light">Tìm tài xế</button>
+                        <button class="btn btn-indigo btn-sm waves-effect waves-light" v-if="req.confirm_status<=2" @click="findDriver(req)">Tìm tài xế</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- MENU CHI TIET -->
-    <div class="modal fade top" id="modalDetailRequest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" 
-    aria-hidden="true" data-backdrop="false">
+    <div class="modal fade top" id="modalDetailRequest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
         <!--Header -->
         <div class="modal-dialog  modal-lg" role="document">
             <div class="modal-content">
@@ -42,8 +41,8 @@
                     </button>
                 </div>
                 <div class="modal-body " style="over-flow:auto">
-                    <div class="row ">
-                        <div class="col-md-4 col-sm-12 card pt-2 mr-1 mb-2">
+                    <div class="row d-flex justify-content-between px-1">
+                        <div class="col-md-4 col-sm-12 card pt-2 ">
                             <div v-if="selectedRequest!=null">
                                 <h6 class="mb-0 indigo-text font-weight-bold">Thông tin khách hàng</h6>
                                 <hr class="my-1 indigo text-right" style="width:50%;" align=left />
@@ -53,24 +52,29 @@
                                 <span class="mb-1 d-block"><i class="fa fa-sticky-note text-info mr-1"></i>Ghi chú: {{selectedRequest.note}} </span>
                             </div>
                         </div>
-                        <div class="col-md-3 col-sm-12 card pt-2 mr-1 mb-2">
+                        <div class="col-md-3 col-sm-12 card pt-2 ">
                             <div v-if="selectedRequest!=null">
                                 <h6 class="mb-0 indigo-text font-weight-bold">Thông tin tài xế</h6>
                                 <hr class="my-1 indigo text-right" style="width:50%;" align=left />
                                 <span class="mb-1 d-block"><i class="fa fa-user-circle-o text-info mr-1"></i>Tài khoản: {{selectedRequest.user_name}}</span>
                             </div>
                         </div>
-                        <div class="col-md-4 col-sm-12 card pt-2 mr-1 mb-2">
+                        <div class="col-md-4 col-sm-12 card pt-2 ">
                             <div v-if="selectedRequest!=null">
                                 <h6 class="mb-0 indigo-text font-weight-bold">Thông tin chuyến xe</h6>
-                                 <hr class="my-1 indigo text-right" style="width:50%;" align=left />
-                                <span class="mb-1 d-block"><i class="fa fa-clock-o text-info mr-1 "></i>Tiếp nhận: {{selectedRequest.create_date}} </span> 
+                                <hr class="my-1 indigo text-right" style="width:50%;" align=left />
+                                <span class="mb-1 d-block"><i class="fa fa-clock-o text-info mr-1 "></i>Tiếp nhận: {{selectedRequest.create_date}} </span>
                                 <span class="mb-1 d-block"><i class="fa fa-clock-o text-info mr-1 "></i>Tài xế nhận: {{selectedRequest.driving_date}} </span>
                                 <span class="mb-1 d-block"><i class="fa fa-clock-o text-info mr-1"></i>Bắt đầu: {{selectedRequest.start_time}}</span>
                                 <span class="mb-1 d-block"><i class="fa fa-clock-o text-info mr-1"></i>Kết thúc: {{selectedRequest.end_time}} </span>
                             </div>
                         </div>
+                        <div class="col-12 mt-2" v-show="selectedRequest!=null && selectedRequest.user_name!=null">
+                            <div id="myMap">
+                            </div>
+                        </div>
                     </div>
+                    
                 </div>
                 <div class="modal-footer justify-content-center">
                     <button type="button" class="btn btn-outline-primary btn-sm" data-dismiss="modal">Đóng</button>
@@ -84,14 +88,20 @@
 
 <script>
 import Config from '../config';
-
+import GoogleMapsLoader from 'google-maps';
 export default {
     name: "RequestManagement",
     data() {
         return {
             lstRequest: [],
             selectedRequest: null,
-            maxheight: 500
+            maxheight: 500,
+            google: null,
+            map: null,
+            marker: null,
+            infoWindow: null,
+            directionsService: null,
+            directionsDisplay: null,
         }
     },
 
@@ -112,13 +122,117 @@ export default {
         refreshAllData(data) {
             this.lstRequest = data;
         }
-    },  
-
-    created() {
-        this.getLocation(); 
     },
 
+    created() {
+        this.getLocation();
+        this.$socket.close();
+        this.$socket.connect();
+    },
+    mounted() {
+        // this.$socket.emit('message', 'App 3') ;
+        var self = this;
+        self.initMap();
+    },
     methods: {
+        //Tao map
+        initMap() {
+            var self = this;
+            GoogleMapsLoader.KEY = Config.keyMap;
+            GoogleMapsLoader.VERSION = Config.versionMap;
+            GoogleMapsLoader.LIBRARIES = ['geometry', 'places'];
+            GoogleMapsLoader.LANGUAGE = 'vi';
+            // console.log("map: ", google.maps);
+
+            GoogleMapsLoader.load(function (google) {
+                var map = new google.maps.Map(document.getElementById('myMap'), {
+                    zoom: 18,
+                    center: {
+                        lat: 10.7637665802915,
+                        lng: 106.6825457802915
+                    },
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+                self.google = google;
+                self.map = map;
+                // console.log('map',map);
+
+                // self.marker = new google.maps.Marker({
+                //     map: map,
+                //     position: self.currLocation, //new google.maps.LatLng(self.currLocation.lat, self.currLocation.lng),
+                //     draggable: true,
+                //     // animation:google.maps.Animation.DROP
+                // });
+                self.infoWindow = new google.maps.InfoWindow();
+                self.directionsService = new google.maps.DirectionsService;
+                self.directionsDisplay = new google.maps.DirectionsRenderer;
+                self.directionsDisplay.setMap(self.map);
+                // self.currLocation=google.loader.ClientLocation;
+                // console.log(google.loader.ClientLocation);
+                // console.log(self.google);
+                // console.log(self.map);
+                // console.log(self.geocoder);
+                // self.oldLocationMarker=new google.maps.LatLng();
+
+                // self.zoneCircle = new google.maps.Circle({
+                //     strokeColor: '#00C851',
+                //     strokeOpacity: 1,
+                //     strokeWeight: 1,
+                //     fillColor: '#007E33',
+                //     fillOpacity: 0.05,
+                //     map: self.map,
+                //     center: self.currLocation,
+                //     radius: self.zoneValid
+                // });
+                google.maps.event.addDomListener(window, 'resize', function () {
+                    var center = self.map.getCenter();
+                    google.maps.event.trigger(self.map, 'resize');
+                    self.map.setCenter(center);
+                });
+
+                // google.maps.event.addListener(self.marker, 'dragstart', function (event) {
+                //     // self.oldLocationMarker=this.getPosition();
+                //     self.oldLocationMarker.lat = event.latLng.lat();
+                //     self.oldLocationMarker.lng = event.latLng.lng();
+                //     // console.log(JSON.stringify(self.oldLocationMarker));
+                // });
+                // google.maps.event.addListener(self.marker, 'dragend', function (event) {
+                //     // self.oldLocationMarker=this.getPosition();
+                //     self.newLocationMarker.lat = event.latLng.lat();
+                //     self.newLocationMarker.lng = event.latLng.lng();
+                //     // console.log(JSON.stringify(self.newLocationMarker));
+                //     self.validLocation();
+
+                // });
+                var body = document.body,
+                    html = document.documentElement;
+                var height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight);
+                document.getElementById('myMap').style.height = `${height-250}px`;
+                self.maxheight = height - 100;
+            });
+        },
+        //Ve duong di
+        drawDirection() {
+            var self = this;
+            var direction=JSON.parse(self.selectedRequest.direction);
+            self.directionsService.route({
+                origin: direction.origin,
+                destination: direction.destination,
+                travelMode: 'DRIVING'
+            }, function (response, status) {
+                if (status === 'OK') {
+
+                    console.log(response);
+                    self.directionsDisplay.setDirections(response);
+                } else {
+                    self.$toasted.show("Không tìm thấy đường đi!", {
+                        theme: "primary",
+                        position: "top-center",
+                        duration: 2000
+                    });
+                }
+            });
+        },
         //lay danh sach
         getLocation() {
             var self = this;
@@ -135,6 +249,9 @@ export default {
         loadDetailRequest(req) {
             var self = this;
             self.selectedRequest = req;
+            if(req.user_name!=null){
+                self.drawDirection();
+            }
         },
 
         // cap nhat tinh trang
@@ -161,14 +278,18 @@ export default {
                     break;
             }
             return html;
-        }
+        },
+        //Tim tai xe
+        findDriver(req) {
+            this.$socket.emit('SendingRequest', req);
+        },
     }
 }
 </script>
 
 <style>
-    .modal-body {
-        overflow: auto;
-        max-height: 27rem;
-    }
+.modal-body {
+    overflow: auto;
+    max-height: 27rem;
+}
 </style>
