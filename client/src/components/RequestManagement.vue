@@ -7,6 +7,7 @@
                 <div class="card hoverable rounded ">
                     <div class="card-body py-1 px-2">
                         <p class="dark-grey-text mb-0 ">
+                        <!-- <i class="fa fa-circle " v-bind:class="statusRequest(req.confirm_status)"></i> -->    
                             <strong><i class="fa fa-clock-o"></i> {{req.create_date}} </strong>
                             <span class="badge  badge-danger  pull-right py-1" v-if="req.confirm_status==1">Chưa định vị</span>
                             <span class="badge  badge-default  pull-right py-1" v-if="req.confirm_status==2">Đã định vị</span>
@@ -94,7 +95,25 @@ export default {
         }
     },
 
- 
+    //tao socket xu ly chat
+    sockets: {
+        connect() {
+            var data = {
+                room: Config.roomAdmin,
+            }
+            this.$socket.emit("JoinRoom", data);
+        },
+        disconnected() {
+            console.log('disconected');
+        },
+        joinRoom(data) {
+            console.log(data);
+        },
+        refreshAllData(data) {
+            this.lstRequest = data;
+        }
+    },  
+
     created() {
         this.getLocation(); 
     },
@@ -117,10 +136,39 @@ export default {
             var self = this;
             self.selectedRequest = req;
         },
+
+        // cap nhat tinh trang
+        statusRequest(status) {
+            var html = "";
+            switch (status) {
+                case 1:
+                    html = " text-danger ";
+                    break;
+                case 2:
+                    html = " text-default ";
+                    break;
+                case 3:
+                    html = "text-primary";
+                    break;
+                case 4:
+                    html = "text-secondary";
+                    break;
+                case 5:
+                    html = "text-success";
+                    break;
+                default:
+                    html = "text-default";
+                    break;
+            }
+            return html;
+        }
     }
 }
 </script>
 
 <style>
-
+    .modal-body {
+        overflow: auto;
+        max-height: 27rem;
+    }
 </style>
