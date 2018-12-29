@@ -211,7 +211,7 @@ export default {
                     self.$toasted.show(res.data.msg, {
                         theme: "bubble",
                         position: "top-center",
-                        duration: 5000
+                        duration: Config.notificationTime
                     });
                     // alert(res.data.msg);
                     

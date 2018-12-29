@@ -166,7 +166,7 @@ export default {
                     self.$toasted.show("Ứng dụng không hỗ trợ vị trí", {
                         theme: "bubble",
                         position: "top-left",
-                        duration: 5000
+                        duration: Config.notificationTime
                     });
                 }
                 // console.log(pos.coords);
@@ -189,7 +189,7 @@ export default {
                 self.$toasted.show(msg, {
                     theme: "bubble",
                     position: "top-left",
-                    duration: 5000
+                    duration: Config.notificationTime
                 });
             });
         // self.socket.on('news', (data) => {
@@ -312,7 +312,7 @@ export default {
                 var body = document.body,
                     html = document.documentElement;
                 var height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight);
-                document.getElementById('myMap').style.height = `${height-100}px`;
+                document.getElementById('myMap').style.height = `${height-50}px`;
             });
         },
         statusButtonStart() {
@@ -348,7 +348,7 @@ export default {
                 self.$toasted.show(`Vị trí cập nhật không quá ${self.zoneValid}m so với mặc định`, {
                     theme: "bubble",
                     position: "top-left",
-                    duration: 2000
+                    duration: Config.notificationTime
                 });
             } else {
                 self.updateLocationDriver();
@@ -369,7 +369,7 @@ export default {
                     self.$toasted.show(res.data.msg, {
                         theme: "bubble",
                         position: "top-right",
-                        duration: 5000
+                        duration: Config.notificationTime
                     });
                 })
                 .catch(err => {
@@ -377,7 +377,7 @@ export default {
                     self.$toasted.show(err, {
                         theme: "bubble",
                         position: "top-right",
-                        duration: 5000
+                        duration: Config.notificationTime
                     });
                 });
         },
@@ -391,7 +391,7 @@ export default {
                     self.$toasted.show(res.data.msg, {
                         theme: "bubble",
                         position: "top-right",
-                        duration: 2000
+                        duration: Config.notificationTime
                     });
                     // alert(res.data.msg);
                 })
@@ -400,7 +400,7 @@ export default {
                     self.$toasted.show(err, {
                         theme: "bubble",
                         position: "top-right",
-                        duration: 2000
+                        duration: Config.notificationTime
                     });
                 });
         },
@@ -452,13 +452,13 @@ export default {
                             self.$toasted.show("Bắt đầu chuyến đi nào!", {
                                 theme: "bubble",
                                 position: "top-right",
-                                duration: 2000
+                                duration: Config.notificationTime
                             });
                         } else {
                             self.$toasted.show("Cập nhật trạng thái thất bại!", {
                                 theme: "bubble",
                                 position: "top-right",
-                                duration: 2000
+                                duration: Config.notificationTime
                             });
                         }
 
@@ -481,13 +481,13 @@ export default {
                             self.$toasted.show("Hoàn thành chuyến đi!", {
                                 theme: "bubble",
                                 position: "top-right",
-                                duration: 2000
+                                duration: Config.notificationTime
                             });
                         } else {
                             self.$toasted.show("Cập nhật trạng thái thất bại!", {
                                 theme: "bubble",
                                 position: "top-right",
-                                duration: 2000
+                                duration: Config.notificationTime
                             });
                         }
                         self.isBusy = null;
@@ -515,7 +515,7 @@ export default {
                     self.$toasted.show("Không tìm thấy đường đi!", {
                         theme: "bubble",
                         position: "top-right",
-                        duration: 2000
+                        duration: Config.notificationTime
                     });
                 }
             });

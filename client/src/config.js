@@ -5,4 +5,5 @@ module.exports={
     'roomAdmin':"Admin",
     'roomDriver':"Driver",
     'delayTime':10,
+    'notificationTime':2000
 }

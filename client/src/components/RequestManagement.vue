@@ -32,7 +32,7 @@
     <!-- MENU CHI TIET -->
     <div class="modal fade top" id="modalDetailRequest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
         <!--Header -->
-        <div class="modal-dialog  modal-lg" role="document">
+        <div class="modal-dialog  modal-lg  modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header pt-2 pb-1  indigo white-text text-uppercase w-100">
                     <h4 class="modal-title w-100" id="myModalLabel">Chi tiết chuyến xe</h4>
@@ -41,8 +41,8 @@
                     </button>
                 </div>
                 <div class="modal-body " style="over-flow:auto">
-                    <div class="row d-flex justify-content-between px-1">
-                        <div class="col-md-4 col-sm-12 card pt-2 ">
+                    <div class="card-deck ">
+                        <div class="card px-1 pt-2">
                             <div v-if="selectedRequest!=null">
                                 <h6 class="mb-0 indigo-text font-weight-bold">Thông tin khách hàng</h6>
                                 <hr class="my-1 indigo text-right" style="width:50%;" align=left />
@@ -52,14 +52,14 @@
                                 <span class="mb-1 d-block"><i class="fa fa-sticky-note text-info mr-1"></i>Ghi chú: {{selectedRequest.note}} </span>
                             </div>
                         </div>
-                        <div class="col-md-3 col-sm-12 card pt-2 ">
+                        <div class=" card px-1 pt-2">
                             <div v-if="selectedRequest!=null">
                                 <h6 class="mb-0 indigo-text font-weight-bold">Thông tin tài xế</h6>
                                 <hr class="my-1 indigo text-right" style="width:50%;" align=left />
                                 <span class="mb-1 d-block"><i class="fa fa-user-circle-o text-info mr-1"></i>Tài khoản: {{selectedRequest.user_name}}</span>
                             </div>
                         </div>
-                        <div class="col-md-4 col-sm-12 card pt-2 ">
+                        <div class="card px-1 pt-2">
                             <div v-if="selectedRequest!=null">
                                 <h6 class="mb-0 indigo-text font-weight-bold">Thông tin chuyến xe</h6>
                                 <hr class="my-1 indigo text-right" style="width:50%;" align=left />
@@ -70,7 +70,7 @@
                             </div>
                         </div>
                         <div class="col-12 mt-2" v-show="selectedRequest!=null && selectedRequest.user_name!=null">
-                            <div id="myMap">
+                            <div id="myMap" class="rounded">
                             </div>
                         </div>
                     </div>
@@ -228,7 +228,7 @@ export default {
                     self.$toasted.show("Không tìm thấy đường đi!", {
                         theme: "primary",
                         position: "top-center",
-                        duration: 2000
+                        duration: Config.notificationTime
                     });
                 }
             });

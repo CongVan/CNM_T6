@@ -103,7 +103,7 @@ export default {
                         self.$toasted.show(res.data.msg, {
                             theme: "bubble",
                             position: "top-center",
-                            duration: 5000
+                            duration: Config.notificationTime
                         });
                         // alert(res.data.msg);
                         // this.$socket.emit('SendingRequest',self.currRequest);
@@ -115,7 +115,7 @@ export default {
                 self.$toasted.show("Vui lòng nhập đủ dữ liệu!", {
                     theme: "bubble",
                     position: "top-center",
-                    duration: 5000
+                    duration: Config.notificationTime
                 });
             }
         },

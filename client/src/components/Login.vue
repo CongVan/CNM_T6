@@ -83,14 +83,14 @@ export default {
                             self.$toasted.show("Đăng nhập thành công", {
                                 theme: "bubble",
                                 position: "top-right",
-                                duration: 2000
+                                duration: Config.notificationTime
                             });
                             console.log(res.data.user);
                         } else {
                             self.$toasted.show("Tên đăng nhập/ mật khẩu không đúng", {
                                 theme: "bubble",
                                 position: "top-right",
-                                duration: 2000
+                                duration: Config.notificationTime
                             });
                         }
 
