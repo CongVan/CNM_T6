@@ -118,5 +118,55 @@ router.post('/online', (req, res) => {
         });
 });
 
+router.post('/offline', (req, res) => {
+    var d = req.body;
+    driverModel.offline(d)
+        .then(results => {
+            var r = results.affectedRows;
+            if (r == 1) {
+                res.json({
+                    result: 1,
+                    msg: "OFFLINE thành công"
+                });
+            } else {
+                res.json({
+                    result: -1,
+                    msg: "OFFLINE Thất bại"
+                });
+            }
+        })
+        .catch(err => {
+            res.json({
+                result: -1,
+                msg: err
+            });
+        });
+});
+router.post('/update-location', (req, res) => {
+    var d = req.body;
+    driverModel.updateLocation(d)
+        .then(results => {
+            var r = results.affectedRows;
+            if (r == 1) {
+                res.json({
+                    result: 1,
+                    msg: "Cập nhật vị trí thành công"
+                });
+            } else {
+                res.json({
+                    result: -1,
+                    msg: "Cập nhật vị trí t thất bại"
+                });
+            }
+        })
+        .catch(err => {
+            res.json({
+                result: -1,
+                msg: err
+            });
+        });
+});
+
+
 
 module.exports = router;

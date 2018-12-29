@@ -24,7 +24,43 @@ exports.online = (driver) => {
         connection.connect();
         var sql = `
         UPDATE driver
-        SET status='${driver.stutus}', location='${driver.location}' 
+        SET status='${driver.status}', location='${driver.location}' 
+        where id=${driver.id}`;
+        console.log(sql);
+        connection.query(sql, (error, results) => {
+
+            if (error)
+                reject(error);
+            else resolve(results);
+            connection.end();
+        });
+    });
+}
+exports.offline = (driver) => {
+    return new Promise((resolve, reject) => {
+        var connection = connector.getConnection();
+        connection.connect();
+        var sql = `
+        UPDATE driver
+        SET status='${driver.status}'
+        where id=${driver.id}`;
+        console.log(sql);
+        connection.query(sql, (error, results) => {
+
+            if (error)
+                reject(error);
+            else resolve(results);
+            connection.end();
+        });
+    });
+}
+exports.updateLocation = (driver) => {
+    return new Promise((resolve, reject) => {
+        var connection = connector.getConnection();
+        connection.connect();
+        var sql = `
+        UPDATE driver
+        SET location='${driver.location}'
         where id=${driver.id}`;
         console.log(sql);
         connection.query(sql, (error, results) => {

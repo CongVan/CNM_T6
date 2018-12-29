@@ -98,6 +98,81 @@ router.post('/confirm-location-request', (req, res) => {
 
 
 });
+
+router.post('/update-status-request', (req, res) => {
+    var m = req.body;
+    reqModel.UpdateStatusRequest(m)
+        .then(results => {
+            var check=true;
+            for (let index = 0; index < results.length; index++) {
+                if(results[index].affectedRows==0){
+                    check=false;
+                    break;
+                }
+            }
+            if (check) {
+                res.json({
+                    result: 1,
+                    msg: "Thành công"
+                });
+                reqModel.GetAllRequests().then(rows => {
+                    appIo.to(config.roomAdmin).emit('refreshAllData', rows);
+                });
+            } else {
+                res.json({
+                    result: -1,
+                    msg: "Thất bại"
+                });
+            }
+
+        })
+        .catch(err => {
+            res.json({
+                result: -1,
+                msg: err
+            });
+        });
+});
+router.post('/confirm-driver-request', (req, res) => {
+    var m = req.body;
+    // console.log('/confirm-driver-request',m)
+    reqModel.ConfirmDriverRequest(m)
+        .then(results => {
+            // res.json({a:resultsơ});
+            var check=true;
+            for (let index = 0; index < results.length; index++) {
+                if(results[index].affectedRows==0){
+                    check=false;
+                    break;
+                }
+            }
+            if (check) {
+                res.json({
+                    result: 1,
+                    msg: "Thành công"
+                });
+                reqModel.GetAllRequests().then(rows => {
+                    appIo.to(config.roomAdmin).emit('refreshAllData', rows);
+                });
+                // reqModel.GetRequests().then(rows => {
+                //     appIo.emit('refreshData', rows);
+                // });
+            } else {
+                res.json({
+                    result: -1,
+                    msg: "Thất bại",
+                    results:results
+                });
+            }
+
+        })
+        .catch(err => {
+            res.json({
+                result: -1,
+                msg: "Lỗi: "+err
+            });
+        });
+});
 module.exports =  function (io) {
     appIo = io;
 

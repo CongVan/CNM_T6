@@ -87,3 +87,63 @@ exports.ConfirmLocationRequest = (m) => {
 
     });
 }
+exports.UpdateStatusRequest = (m) => {
+    return new Promise((resolve, reject) => {
+        var connection = connector.getConnection();
+        connection.connect();
+        var sql = `
+        UPDATE request
+        SET confirm_status=${m.status}
+        where id=${m.requestId};`
+        var time=" ";
+        if(m.status===4 ){
+            time=`,start_time='${moment().format('YYYY-MM-DD hh:mm:ss')}'`;
+        }
+        if(m.status===5){
+            time=`,end_time='${moment().format('YYYY-MM-DD hh:mm:ss')}'`;
+        }
+        sql+=`UPDATE driver_request
+        SET status=${m.statusDriving} ${time}
+        where driver_id=${m.userId} and request_id=${m.requestId};
+        `
+        connection.query(sql, (error, results) => {
+            if (error)
+                reject(error);
+            else resolve(results);
+            connection.end();
+        });
+
+    });
+}
+exports.ConfirmDriverRequest = (m) => {
+    return new Promise((resolve, reject) => {
+        var connection = connector.getConnection();
+        connection.connect();
+        var sql = `
+        UPDATE request
+        SET confirm_status=${m.status == true ? 3 : 2}
+        where id=${m.requestId};
+
+        UPDATE driver
+        SET status=${m.status == true ? 2 : 1}
+        where id=${m.driverId}; 
+        `
+        if (m.status == true) {
+            sql += ` INSERT INTO driver_request (driver_id, request_id, date, status, direction) 
+            VALUES (${m.driverId}, ${m.requestId}, '${moment().format('YYYY-MM-DD hh:mm:ss')}', 1,'${JSON.stringify(m.direction)}');`;
+        }
+        console.log('ConfirmDriverRequest');
+        console.log(sql);
+        // resolve(sql);
+        connection.query(sql, (error, results) => {
+            if (error)
+                reject(error);
+            else {
+                // console.log(results);
+                resolve(results);
+            }
+            connection.end();
+        });
+
+    });
+}
