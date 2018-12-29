@@ -59,7 +59,7 @@
               <i class="fa fa-user-o "></i> {{user.user_name}} </a>
                     <div class="dropdown-menu dropdown-menu-right dropdown-info" aria-labelledby="navbarDropdownMenuLink-4">
                         <!-- <a class="dropdown-item waves-effect waves-light" href="#">My account</a> -->
-                        <a class="dropdown-item waves-effect waves-light" href="#"><i class="fa fa-sign-out" /> Đăng Xuất</a>
+                        <a class="dropdown-item waves-effect waves-light" href="javascript:;" @click="logOut"><i class="fa fa-sign-out" /> Đăng Xuất</a>
                     </div>
                 </li>
             </ul>

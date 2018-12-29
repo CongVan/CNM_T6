@@ -11,7 +11,7 @@
             <div class="col-md-3 col-sm-12  d-flex justify-content-center mb-1" v-if="isBusy==null">
                 <button class="btn btn-primary btn-block" @click="startWaitting" :disabled="isWaitting" v-if="isBusy==null">{{isWaitting?"Đang online....":"Nhận khách"}}</button>
             </div>
-            <div class="col-md-3 col-sm-12  d-flex justify-content-center  mb-1" v-if="isBusy==null"> 
+            <div class="col-md-3 col-sm-12  d-flex justify-content-center  mb-1" v-if="isBusy==null">
                 <button class="btn btn-danger btn-block" @click="stopWaitting" v-if="isWaitting==true && isBusy==null" >Hủy</button>
                 <button class="btn btn-danger btn-block" @click="showMap=!showMap" v-if="isWaitting==false && isBusy==null ">{{showMap?'Ẩn bản đồ':'Hiện bản đồ'}}</button>
             </div>
@@ -157,7 +157,7 @@ export default {
         self.getCurrentPosition()
             .then(pos => {
                 if (pos.coords) {
-                    var randomX = 0;//(Math.random() * 0.00001 + 0.001); //1 - 10000
+                    var randomX = 0; //(Math.random() * 0.00001 + 0.001); //1 - 10000
                     self.currLocation.lat = parseFloat(pos.coords.latitude + randomX);
                     self.currLocation.lng = parseFloat(pos.coords.longitude + randomX);
                     self.oldLocationMarker = self.currLocation;
@@ -222,7 +222,7 @@ export default {
                 self.google = google;
                 self.map = map;
                 // console.log('map',map);
-                var geocoder = new google.maps.Geocoder();
+                // var geocoder = new google.maps.Geocoder();
                 // if (self.currLocation.lat == null) {
                 //     geocoder.geocode({
                 //             address: "Quan+1+,+Ho+Chi+Minh"
@@ -298,7 +298,12 @@ export default {
                     self.newLocationMarker.lat = event.latLng.lat();
                     self.newLocationMarker.lng = event.latLng.lng();
                     // console.log(JSON.stringify(self.newLocationMarker));
-                    self.validLocation();
+                    self.getCurrentPosition().then(pos => {
+                        self.currLocation.lat = parseFloat(pos.coords.latitude );
+                        self.currLocation.lng = parseFloat(pos.coords.longitude );
+                        // self.currLocation=pos;
+                        self.validLocation();
+                    })
 
                 });
                 google.maps.event.addListener(self.marker, 'click', function () {
@@ -335,9 +340,9 @@ export default {
                 new self.google.maps.LatLng(self.currLocation.lat, self.currLocation.lng),
                 new self.google.maps.LatLng(self.newLocationMarker.lat, self.newLocationMarker.lng)
             );
-             console.log(self.currLocation.lat,self.currLocation.lng);
-                console.log(self.newLocationMarker.lat,self.newLocationMarker.lng);
-                console.log(distance);
+            console.log(self.currLocation.lat, self.currLocation.lng);
+            console.log(self.newLocationMarker.lat, self.newLocationMarker.lng);
+            console.log(distance);
             if (distance > self.zoneValid) {
                 self.setLocationMarker(self.oldLocationMarker);
                 self.$toasted.show(`Vị trí cập nhật không quá ${self.zoneValid}m so với mặc định`, {

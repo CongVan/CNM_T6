@@ -82,15 +82,15 @@ export default {
                             });
                             self.$toasted.show("Đăng nhập thành công", {
                                 theme: "bubble",
-                                position: "top-center",
-                                duration: 5000
+                                position: "top-right",
+                                duration: 2000
                             });
                             console.log(res.data.user);
                         } else {
                             self.$toasted.show("Tên đăng nhập/ mật khẩu không đúng", {
                                 theme: "bubble",
-                                position: "top-center",
-                                duration: 5000
+                                position: "top-right",
+                                duration: 2000
                             });
                         }
 
