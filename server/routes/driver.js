@@ -3,13 +3,14 @@ var router = express.Router();
 var driverModel = require('../models/driver');
 var jwt = require('jsonwebtoken');
 var config = require('../config');
+var token=require('../oauth');
 /* GET home page. */
 router.get('/', function (req, res, next) {
     res.json({ status: 'oK' })
 });
 
 var verifyAccessToken = (req, res, next) => {
-    console.log(req.headers);
+    // console.log(req.headers);
     // if(req.Url.pathname=='/driver/login'){
     //   next();
     // }
@@ -17,8 +18,9 @@ var verifyAccessToken = (req, res, next) => {
     if (token) {
         jwt.verify(token, config.secret, (err, payload) => {
             if (err) {
-                res.statusCode = 403;
+                // res.statusCode = 403;
                 res.json({
+                    result:-99,
                     msg: "Invalid Token",
                     err: err
                 });
@@ -31,6 +33,7 @@ var verifyAccessToken = (req, res, next) => {
     } else {
         res.statusCode = 403;
         res.json({
+            result:-99,
             msg: "Không có token"
         });
     }
@@ -42,7 +45,7 @@ router.get('/valid-token', function (req, res, next) {
             if (err) {
                 res.statusCode = 204;
                 res.json({
-                    status: -1,
+                    status: -99,
                     msg: "Invalid Token",
                     err: err
                 });
@@ -57,8 +60,9 @@ router.get('/valid-token', function (req, res, next) {
     } else {
         res.statusCode = 204;
         res.json({
-            status: -1,
-            msg: "Không có token"
+            status: -99,
+            msg: "Token Not Found",
+            err: "Token Not Found"
         });
     }
 });
@@ -101,7 +105,7 @@ router.get('/get-online', function (req, res, next) {
             res.json({ result: -1, msg: err });
         })
 });
-router.post('/online', (req, res) => {
+router.post('/online',token.verifyAccessToken, (req, res) => {
     var d = req.body;
     driverModel.online(d)
         .then(results => {

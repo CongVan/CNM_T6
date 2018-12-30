@@ -236,7 +236,7 @@ export default {
         //lay danh sach
         getLocation() {
             var self = this;
-            this.axios.get(`${Config.hostAPI}/request-receiver/get-all-requests`) //axios goi API
+            self.axios.get(`${Config.hostAPI}/request-receiver/get-all-requests`) //axios goi API
                 //goi tu config.js
                 .then(response => {
                     self.lstRequest = response.data;

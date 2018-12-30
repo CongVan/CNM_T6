@@ -299,8 +299,8 @@ export default {
                     self.newLocationMarker.lng = event.latLng.lng();
                     // console.log(JSON.stringify(self.newLocationMarker));
                     self.getCurrentPosition().then(pos => {
-                        self.currLocation.lat = parseFloat(pos.coords.latitude );
-                        self.currLocation.lng = parseFloat(pos.coords.longitude );
+                        self.currLocation.lat = parseFloat(pos.coords.latitude);
+                        self.currLocation.lng = parseFloat(pos.coords.longitude);
                         // self.currLocation=pos;
                         self.validLocation();
                     })
@@ -358,14 +358,18 @@ export default {
         },
         startWaitting() {
             var self = this;
-            self.isWaitting = true;
-            self.user.status = 1;
-            self.user.location = JSON.stringify(self.oldLocationMarker);
-            self.marker.setDraggable(false);
+
             // console.log(self.user);
             // return;
             self.axios.post(`${Config.hostAPI}/driver/online`, self.user)
                 .then(res => {
+                    if (res.data.result == 1) {
+                        self.isWaitting = true;
+                        self.user.status = 1;
+                        self.user.location = JSON.stringify(self.oldLocationMarker);
+                        self.marker.setDraggable(false);
+
+                    }
                     self.$toasted.show(res.data.msg, {
                         theme: "bubble",
                         position: "top-right",

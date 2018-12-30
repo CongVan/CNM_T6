@@ -54,7 +54,7 @@
               <i class="fa fa-sign-out" /> Đăng Xuất
             </a>
                 </li> -->
-                <li class="nav-item dropdown ml-md-auto font-weight-bold">
+                <li class="nav-item dropdown ml-md-auto font-weight-bold" v-bind:class="{'hidden':!isLogin}">
                     <a class="nav-link dropdown-toggle waves-effect waves-light" id="navbarDropdownMenuLink-4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
               <i class="fa fa-user-o "></i> {{user.user_name}} </a>
                     <div class="dropdown-menu dropdown-menu-right dropdown-info" aria-labelledby="navbarDropdownMenuLink-4">

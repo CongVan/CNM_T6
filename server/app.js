@@ -11,6 +11,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var reqRouter = require('./routes/reqest-receiver')(io);
 var driver = require('./routes/driver');
+
+var token=require('./oauth');
 var app = express();
 
 // view engine setup
@@ -32,7 +34,7 @@ app.use(bodyParser.json());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/request-receiver', reqRouter);
+app.use('/request-receiver', token.verifyAccessToken,reqRouter);
 app.use('/driver', driver);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

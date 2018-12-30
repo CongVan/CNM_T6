@@ -7,5 +7,5 @@ module.exports={
     'minRange':9000,
     'stepRange':500,
     'delayTime':5,//second
-    'expiredJWT':3600
+    'expiredJWT':10
 };

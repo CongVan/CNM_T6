@@ -10,6 +10,10 @@ import VueSocketIO from 'vue-socket.io';
 
 Vue.config.productionTip = false
 Vue.use(VueAxios, axios);
+console.log(store.getters.getToken);
+axios.defaults.headers.post['x-access-token'] = store.getters.getUser?store.getters.getToken:""; // for POST requests
+axios.defaults.headers.common['x-access-token'] = store.getters.getUser?store.getters.getToken:""; // for all requests
+
 Vue.use(Toasted);
 Vue.use(new VueSocketIO({
   debug: true,
@@ -20,6 +24,7 @@ Vue.use(new VueSocketIO({
   //     mutationPrefix: 'SOCKET_'
   // }
 }));
+
 new Vue({
   router,
   store,
