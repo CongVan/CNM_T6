@@ -89,6 +89,7 @@ router.beforeEach((to, from, next) => {
 
           if (res.data.status == 1) {
             var user = suser;
+            document.title=to.meta.title;
             next(user.role == 1 && to.name == "RequestReceiver" ? true :
               user.role == 2 && to.name == "LocationIdentifier" ? true :
                 user.role == 3 && to.name == "RequestManagement" ? true :
