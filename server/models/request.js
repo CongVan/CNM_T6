@@ -73,9 +73,10 @@ exports.ConfirmLocationRequest = (m) => {
     return new Promise((resolve, reject) => {
         var connection = connector.getConnection();
         connection.connect();
+        console.log(m);
         var sql = `
         UPDATE request
-        SET confirm_status=2
+        SET confirm_status=2,location_1='${m.location_1}',location_2='${m.location_2}'
         where id=${m.id};`
 
         connection.query(sql, (error, results) => {

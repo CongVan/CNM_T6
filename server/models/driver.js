@@ -8,7 +8,25 @@ exports.Login = (driver) => {
         var sql = `
         select *
         from driver where user_name='${driver.user_name}' and password='${driver.password}'`;
-        console.log(sql);
+        // console.log(sql);
+        connection.query(sql, (error, results, fields) => {
+
+            if (error)
+                reject(error);
+            else resolve(results);
+            connection.end();
+        });
+    });
+}
+
+exports.getDriver = (id) => {
+    return new Promise((resolve, reject) => {
+        var connection = connector.getConnection();
+        connection.connect();
+        var sql = `
+        select *
+        from driver where id=${id}`;
+        // console.log(sql);
         connection.query(sql, (error, results, fields) => {
 
             if (error)
@@ -27,7 +45,7 @@ exports.getDriverOnline = (lstUserNotConfirm) => {
             qUserNot = ` AND id NOT IN (${lstUserNotConfirm.join(',')})`;
         }
         var sql = 'SELECT * FROM driver WHERE status=1 ' + qUserNot;
-         console.log(sql);
+        //  console.log(sql);
         connection.query(sql, (error, results) => {
 
             if (error)
@@ -35,7 +53,7 @@ exports.getDriverOnline = (lstUserNotConfirm) => {
             else {
                 console.log(results);
                 resolve(results)
-            
+
             };
             connection.end();
         });
@@ -46,7 +64,7 @@ exports.checkStatusConfirm = (requestId, userId) => {
         var connection = connector.getConnection();
         connection.connect();
         var sql = `SELECT * FROM driver_request WHERE request_id='${requestId}' AND driver_id='${userId}'`;
-         console.log(sql);
+        //  console.log(sql);
         connection.query(sql, (error, results) => {
             if (error)
                 reject(error);
@@ -67,7 +85,7 @@ exports.online = (driver) => {
         UPDATE driver
         SET status='${driver.status}', location='${driver.location}' 
         where id=${driver.id}`;
-        console.log(sql);
+         console.log(sql);
         connection.query(sql, (error, results) => {
 
             if (error)
@@ -85,7 +103,7 @@ exports.offline = (driver) => {
         UPDATE driver
         SET status='${driver.status}'
         where id=${driver.id}`;
-        console.log(sql);
+        // console.log(sql);
         connection.query(sql, (error, results) => {
 
             if (error)
@@ -103,12 +121,46 @@ exports.updateLocation = (driver) => {
         UPDATE driver
         SET location='${driver.location}'
         where id=${driver.id}`;
-        console.log(sql);
+        // console.log(sql);
         connection.query(sql, (error, results) => {
 
             if (error)
                 reject(error);
             else resolve(results);
+            connection.end();
+        });
+    });
+}
+exports.updateRefreshToken = (driver) => {
+    return new Promise((resolve, reject) => {
+        var connection = connector.getConnection();
+        connection.connect();
+        var sql = `
+        UPDATE driver
+        SET refreshToken='${driver.refreshToken}'
+        where id=${driver.id}`;
+        // console.log(sql);
+        connection.query(sql, (error, results) => {
+
+            if (error)
+                reject(error);
+            else resolve(results);
+            connection.end();
+        });
+    });
+}
+exports.checkRefreshToken = (rToken, ) => {
+    return new Promise((resolve, reject) => {
+        var connection = connector.getConnection();
+        connection.connect();
+        var sql = `SELECT * FROM driver WHERE refreshToken='${rToken}' `;
+        // console.log(sql);
+        connection.query(sql, (error, results) => {
+            if (error)
+                reject(error);
+            else {
+                resolve(results)
+            }
             connection.end();
         });
     });

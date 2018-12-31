@@ -54,9 +54,9 @@
               <i class="fa fa-sign-out" /> Đăng Xuất
             </a>
                 </li> -->
-                <li class="nav-item dropdown ml-md-auto font-weight-bold" v-bind:class="{'hidden':!isLogin}">
+                <li class="nav-item dropdown ml-md-auto font-weight-bold" v-if="isLogin">
                     <a class="nav-link dropdown-toggle waves-effect waves-light" id="navbarDropdownMenuLink-4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-              <i class="fa fa-user-o "></i> {{user.user_name}} </a>
+                    <i class="fa fa-user-o "></i> {{user.user_name}} </a>
                     <div class="dropdown-menu dropdown-menu-right dropdown-info" aria-labelledby="navbarDropdownMenuLink-4">
                         <!-- <a class="dropdown-item waves-effect waves-light" href="#">My account</a> -->
                         <a class="dropdown-item waves-effect waves-light" href="javascript:;" @click="logOut"><i class="fa fa-sign-out" /> Đăng Xuất</a>
@@ -80,7 +80,7 @@ export default {
     data() {
         return {
             isLogin: this.$store.getters.getStatusLogin,
-            user:this.$store.getters.getUser
+            user: this.$store.getters.getUser
         }
     },
     created() {
@@ -90,7 +90,7 @@ export default {
             // console.log(data);
             self.isLogin = true;
             self.$store.dispatch("updateStatusLogin", true);
-            self.user=self.$store.getters.getUser
+            self.user = self.$store.getters.getUser
         });
         // var user = localStorage.getItem('user');
         // var jwt = localStorage.getItem('jwt');
@@ -125,8 +125,8 @@ export default {
         logOut() {
             var self = this;
             self.isLogin = false;
-            localStorage.removeItem('user');
-            localStorage.removeItem('jwt');
+            // localStorage.removeItem('user');
+            // localStorage.removeItem('jwt');
             self.$store.dispatch("logout");
             self.$router.push({
                 name: "Login"
@@ -145,9 +145,11 @@ export default {
 .hidden {
     display: none;
 }
-.dropdown-item:focus, .dropdown-item:hover{
-  background-color: #3d3393;
-  color: #fff!important;
-  box-shadow: 0 5px 11px 0 rgba(0,0,0,.18), 0 4px 15px 0 rgba(0,0,0,.15);
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+    background-color: #3d3393;
+    color: #fff !important;
+    box-shadow: 0 5px 11px 0 rgba(0, 0, 0, .18), 0 4px 15px 0 rgba(0, 0, 0, .15);
 }
 </style>

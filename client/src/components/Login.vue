@@ -40,8 +40,8 @@ export default {
     name: "Login",
     data() {
         return {
-            userName: "user1",
-            password: "user1"
+            userName: "user",
+            password: "user"
         }
     },
     methods: {
@@ -58,6 +58,11 @@ export default {
                     .then(res => {
                         if (res.data.user) {
                             self.$store.dispatch("logined", res.data);
+                            console.log(self.$store.getters.getRefreshToken);
+                            self.axios.defaults.headers.post['x-access-token'] = self.$store.getters.getUser ? self.$store.getters.getToken : ""; // for POST requests
+                            self.axios.defaults.headers.common['x-access-token'] = self.$store.getters.getUser ? self.$store.getters.getToken : ""; // for all requests
+                            self.axios.defaults.headers.post['x-refresh-token'] = self.$store.getters.getUser ? self.$store.getters.getRefreshToken : ""; // for POST requests
+                            self.axios.defaults.headers.common['x-refresh-token'] = self.$store.getters.getUser ? self.$store.getters.getRefreshToken : ""; // for all requests
                             var nameRouter = "Driver";
                             switch (res.data.user.role) {
                                 case 1:
@@ -80,6 +85,7 @@ export default {
                             self.$router.push({
                                 name: nameRouter
                             });
+
                             self.$toasted.show("Đăng nhập thành công", {
                                 theme: "bubble",
                                 position: "top-right",

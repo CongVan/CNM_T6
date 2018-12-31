@@ -358,17 +358,15 @@ export default {
         },
         startWaitting() {
             var self = this;
-
+            self.user.status = 1;
+            self.user.location = JSON.stringify(self.oldLocationMarker);
             // console.log(self.user);
             // return;
             self.axios.post(`${Config.hostAPI}/driver/online`, self.user)
                 .then(res => {
                     if (res.data.result == 1) {
                         self.isWaitting = true;
-                        self.user.status = 1;
-                        self.user.location = JSON.stringify(self.oldLocationMarker);
                         self.marker.setDraggable(false);
-
                     }
                     self.$toasted.show(res.data.msg, {
                         theme: "bubble",

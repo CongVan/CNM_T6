@@ -7,6 +7,11 @@ var distance = require('google-distance-matrix');
 var config = require('./config');
 distance.key(config.keyMap);
 io.on('connection', function (socket) {
+    // socket.on('disconnect', function () {
+
+    //     clientDB.removeClient(socket.id);
+    //     console.log(clientDB.getAllClient());
+    //   });
     // console.log("REQUEST_RECEIVER client connected");
     socket.on('JoinRoom', client => {
         // console.log(socket);
@@ -14,10 +19,11 @@ io.on('connection', function (socket) {
         socket.join(client.room);
         console.log("SERVER: " + client.room + " đã kết nối " + socket.id);
         io.to(client.room).emit('joinRoom', client.room + " đã kết nối " + socket.id);
-        if (client.room == config.roomDriver) {
-            clientDB.addClient({ userId: client.user, socketId: socket.id });
-        }
-        
+        // if (client.room == config.roomDriver) {
+        //     clientDB.addClient({ userId: client.user, socketId: socket.id });
+        // }
+        clientDB.addClient({ userId: client.user, socketId: socket.id });
+        console.log(clientDB.getAllClient());
     });
     socket.on('SendingRequest', data => {
         //  console.log('SendingRequest',data);
@@ -29,7 +35,7 @@ var sendingRequest = (req) => {
     var reqNumber = parseInt(config.reqNumber);
     // console.log(`reqNu bmber`,reqNumber);
     var count = 0;
-    var fn = setInterval(async  ()=> {
+    var fn = setInterval(async () => {
         count++;
         var range = config.minRange + count * config.stepRange;//meter
         var lstUserNotConfirm = [];
@@ -61,19 +67,19 @@ var sendingRequest = (req) => {
                     msg: err
                 });
             });
-            
-    }, count*1000 +2000);//delay 5s
+
+    }, count * 1000 + 2000);//delay 5s
     // setInterval(fn,1000);
 
     // });
 }
 var findDriver = async (req, range, lstUserNotConfirm) => {
     return await new Promise((res, rej) => {
-         console.log(req);
+        console.log(req);
         if (req != null) {
             driver.getDriverOnline(lstUserNotConfirm)
                 .then(drivers => {
-                     console.log('getDriverOnline',drivers.length);
+                    console.log('getDriverOnline', drivers.length);
                     if (drivers.length > 0) {
                         var origin = JSON.parse(req.location_1);
                         var origins = [`${origin.lat},${origin.lng}`];
@@ -110,9 +116,9 @@ var findDriver = async (req, range, lstUserNotConfirm) => {
                                         if (distances.rows[0].elements[min].distance.value > range) {
                                             res({
                                                 result: -1,
-                                                msg: "Không tìm thấy tài xế trong khoảng cách "+range,
+                                                msg: "Không tìm thấy tài xế trong khoảng cách " + range,
                                             });
-    
+
                                         }
                                         var ret = {
                                             result: 1,
@@ -123,34 +129,34 @@ var findDriver = async (req, range, lstUserNotConfirm) => {
                                             },
                                             msg: "OK",
                                             // clients: io.sockets.adapter.rooms['Driver'].sockets,
-    
+
                                         }
                                         var driverSocketId = clientDB.getClientByUserId(drivers[min].id);
-                                        // console.log(driverSocketId);
+                                         console.log('id find driver',driverSocketId,' id driver',drivers[min].id);
                                         if (driverSocketId) {
                                             var i = 1;
                                             // var time = setTimeout(() => {
-                                                io.sockets.connected[driverSocketId].emit('ReceiverRequest', ret);
-                                                console.log('timeout', 'gọi check confirm');
-                                                driver.checkStatusConfirm(req.id, drivers[min].id)
-                                                    .then((check) => {
-                                                        console.log('check', check);
-                                                        // clearTimeout(time);
-                                                        if (check == true) {
-                                                            res(ret);
-                                                        } else {
-                                                            
-                                                            res({
-                                                                result: -1,
-                                                                msg: "Tài xế không xác nhận",
-                                                            });
-                                                        }
-                                                    }).catch(err => {
-                                                        // clearTimeout(time);
-                                                        rej(err);
-                                                    });
+                                            io.sockets.connected[driverSocketId].emit('ReceiverRequest', ret);
+                                            console.log('timeout', 'gọi check confirm');
+                                            driver.checkStatusConfirm(req.id, drivers[min].id)
+                                                .then((check) => {
+                                                    console.log('check', check);
+                                                    // clearTimeout(time);
+                                                    if (check == true) {
+                                                        res(ret);
+                                                    } else {
+
+                                                        res({
+                                                            result: -1,
+                                                            msg: "Tài xế không xác nhận",
+                                                        });
+                                                    }
+                                                }).catch(err => {
+                                                    // clearTimeout(time);
+                                                    rej(err);
+                                                });
                                             // }, config.delayTime * 1000);
-    
+
                                             // io.to(`${driverSocketId}`).emit('ReceiverRequest', ret, function(confirm) {
                                             //     setTimeout(() => { }, config.delayTime);
                                             //     console.log(confim);
@@ -164,8 +170,8 @@ var findDriver = async (req, range, lstUserNotConfirm) => {
                                             //         });
                                             //     }
                                             // });
-    
-    
+
+
                                         } else {
                                             res({
                                                 result: -1,
@@ -182,11 +188,11 @@ var findDriver = async (req, range, lstUserNotConfirm) => {
                                 }
                             } catch (error) {
                                 rej({
-                                    result:-1,
-                                    msg:""+error
+                                    result: -1,
+                                    msg: "" + error
                                 })
                             }
-                            
+
                         });
                     } else {
                         res({
@@ -196,7 +202,7 @@ var findDriver = async (req, range, lstUserNotConfirm) => {
                     }
                 })
                 .catch(err => {
-                    res({ result: -1, msg: "Không tìm thấy tài xế: "+err });
+                    res({ result: -1, msg: "Không tìm thấy tài xế: " + err });
                 })
         } else {
             res({ result: -1, msg: "Không tìm thấy request" });

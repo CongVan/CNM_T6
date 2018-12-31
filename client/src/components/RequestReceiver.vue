@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import Config from '../config';
+import Config from '@/config';
 export default {
     name: "RequestReceiver",
     data() {
@@ -81,14 +81,21 @@ export default {
             }
         }
     },
-    socket:{
+    sockets:{
         connect() {
-            // console.log('connected to chat server');
+            //  console.log('connected to chat server');
+            
             var data={
                 room:Config.roomAdmin,
+                user:this.$store.getters.getUser.id
             }
             this.$socket.emit("JoinRoom", data);
         },
+    },
+    created() {
+        this.$socket.close();
+        this.$socket.connect();
+       
     },
     methods: {
         submitRequest() {

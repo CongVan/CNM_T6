@@ -110,6 +110,7 @@ export default {
         connect() {
             var data = {
                 room: Config.roomAdmin,
+                user:this.$store.getters.getUser.id
             }
             this.$socket.emit("JoinRoom", data);
         },

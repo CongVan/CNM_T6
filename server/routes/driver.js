@@ -3,7 +3,8 @@ var router = express.Router();
 var driverModel = require('../models/driver');
 var jwt = require('jsonwebtoken');
 var config = require('../config');
-var token=require('../oauth');
+var token = require('../oauth');
+var randtoken = require('rand-token');
 /* GET home page. */
 router.get('/', function (req, res, next) {
     res.json({ status: 'oK' })
@@ -20,7 +21,7 @@ var verifyAccessToken = (req, res, next) => {
             if (err) {
                 // res.statusCode = 403;
                 res.json({
-                    result:-99,
+                    result: -99,
                     msg: "Invalid Token",
                     err: err
                 });
@@ -33,38 +34,101 @@ var verifyAccessToken = (req, res, next) => {
     } else {
         res.statusCode = 403;
         res.json({
-            result:-99,
+            result: -99,
             msg: "Không có token"
         });
     }
 }
-router.get('/valid-token', function (req, res, next) {
+router.get('/valid-token' ,function (req, res, next) {
+   
     var token = req.headers["x-access-token"];
+    var rtoken = req.headers["x-refresh-token"];
+      console.log(token,' == ///// ',rtoken);
     if (token) {
         jwt.verify(token, config.secret, (err, payload) => {
             if (err) {
-                res.statusCode = 204;
-                res.json({
-                    status: -99,
-                    msg: "Invalid Token",
-                    err: err
-                });
+                // res.statusCode = 403;
+                if(rtoken){
+                    driverModel.checkRefreshToken(rtoken)
+                    .then(results=>{
+                        if(results.length>0){
+                            var pl = {
+                                data: results[0]
+                            };
+                            var token = jwt.sign(pl, config.secret, { expiresIn: config.expiredJWT });
+                            // req.newToken = token;
+                            // console.log('check' ,results);
+                             var socketId=clientDB.getClientByUserId(results[0].id);
+                            //  console.log(socketId, results[0].id);
+                            
+                            io.sockets.connected[socketId].emit('refreshToken', {token:token});
+                            res.json({
+                                status:1,
+                                msg:"OK"
+                            })
+                        }else{
+                            res.json({
+                                result:-99,
+                                msg: "Invalid Token",
+                                err: err
+                            });
+                        }
+                    })
+                    .catch(err=>{
+                        res.json({
+                            result:-99,
+                            msg: `${err}`,
+                        });
+                    })
+                }else{
+                    res.json({
+                        result:-99,
+                        msg: "Invalid Token",
+                        err: err
+                    });
+                }
             } else {
-                res.statusCode = 200;
+                // console.log(payload);
+                req.payload = payload;
                 res.json({
-                    status: 1,
-                    msg: "OK",
+                    status:1,
+                    msg:"OK"
                 })
             }
         });
     } else {
-        res.statusCode = 204;
+        res.statusCode = 403;
         res.json({
-            status: -99,
-            msg: "Token Not Found",
-            err: "Token Not Found"
+            result:-99,
+            msg: "Không có token"
         });
     }
+    // var token = req.headers["x-access-token"];
+    // if (token) {
+    //     jwt.verify(token, config.secret, (err, payload) => {
+    //         if (err) {
+    //             res.statusCode = 204;
+    //             res.json({
+    //                 status: -99,
+    //                 msg: "Invalid Token",
+    //                 err: err
+    //             });
+    //         } else {
+    //             res.statusCode = 200;
+    //             res.json({
+    //                 status: 1,
+    //                 msg: "OK",
+    //             })
+    //         }
+    //     });
+    // } else {
+    //     res.statusCode = 204;
+    //     res.json({
+    //         status: -99,
+    //         msg: "Token Not Found",
+    //         err: "Token Not Found"
+    //     });
+    // }
 });
 router.post('/login', function (req, res, next) {
     var d = req.body;
@@ -72,17 +136,30 @@ router.post('/login', function (req, res, next) {
         .then(results => {
             // console.log(results);
             if (results.length > 0) {
-                var payload = {
+                var payloadRefresh = {
                     data: results[0]
-                };
-                console.log(payload);
-                var token = jwt.sign(payload, config.secret, { expiresIn: config.expiredJWT });//800s
-                res.status(200)
-                    .json({
-                        auth: true,
-                        user: results[0],
-                        token: token
-                    });
+                }
+                // console.log(payload);
+                var refreshToken = randtoken.generate(16);
+                // jwt.sign(payloadRefresh,config.secretRefresh+`${results[0].id}`, { expiresIn: config.expiredRefreshToken });
+                driverModel.updateRefreshToken({ refreshToken: refreshToken, id: results[0].id });
+                driverModel.getDriver(results[0].id)
+                    .then(data => {
+                        var payload = {
+                            data: data[0]
+                        };
+                        // console.log(data);
+                        var token = jwt.sign(payload, config.secret, { expiresIn: config.expiredJWT });
+
+                        res.status(200)
+                            .json({
+                                auth: true,
+                                user: data[0],
+                                token: token,
+                                refreshToken: refreshToken
+                            });
+                    })
+
             } else {
                 res.status(200)
                     .json({
@@ -96,7 +173,7 @@ router.post('/login', function (req, res, next) {
             console.log('login', error);
         });
 });
-router.get('/get-online', function (req, res, next) {
+router.get('/get-online',token.verifyAccessToken, function (req, res, next) {
     driverModel.getDriverOnline()
         .then(rows => {
             res.json({ result: 1, data: rows });
@@ -105,8 +182,9 @@ router.get('/get-online', function (req, res, next) {
             res.json({ result: -1, msg: err });
         })
 });
-router.post('/online',token.verifyAccessToken, (req, res) => {
+router.post('/online', token.verifyAccessToken, (req, res) => {
     var d = req.body;
+
     driverModel.online(d)
         .then(results => {
             var r = results.affectedRows;
@@ -130,7 +208,7 @@ router.post('/online',token.verifyAccessToken, (req, res) => {
         });
 });
 
-router.post('/offline', (req, res) => {
+router.post('/offline',token.verifyAccessToken, (req, res) => {
     var d = req.body;
     driverModel.offline(d)
         .then(results => {
@@ -154,7 +232,7 @@ router.post('/offline', (req, res) => {
             });
         });
 });
-router.post('/update-location', (req, res) => {
+router.post('/update-location',token.verifyAccessToken, (req, res) => {
     var d = req.body;
     driverModel.updateLocation(d)
         .then(results => {

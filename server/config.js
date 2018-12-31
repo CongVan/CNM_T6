@@ -1,5 +1,6 @@
 module.exports={
     'secret':'SECRET_KEY',
+    'secretRefresh':'SECRET_KEY_REFRESH',
     'keyMap':'AIzaSyBVXo0bnqRZwCW0kups3AFnu9LIuSWLwnA',
     'reqNumber':2,
     'roomAdmin':"Admin",
@@ -7,5 +8,6 @@ module.exports={
     'minRange':9000,
     'stepRange':500,
     'delayTime':5,//second
-    'expiredJWT':10
+    'expiredJWT':10,
+    'expiredRefreshToken':1000
 };

@@ -9,7 +9,7 @@ import Config from './config';
 import VueAxios from 'vue-axios';
 import axios from 'axios';
 import VueSession from 'vue-session';
-import store from './store';
+import store from '@/store';
 Vue.use(VueSession);
 Vue.use(Router);
 Vue.use(VueAxios, axios);
@@ -68,7 +68,9 @@ var router = new Router({
 router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.auth)) {
     var jwt = store.getters.getToken;
+    // var refreshToken=store.getters.getRefreshToken;
     var suser = store.getters.getUser;
+    console.log('router', suser);
     // console.log('store', jwt);
     if (jwt == null) {
       next({
@@ -80,7 +82,8 @@ router.beforeEach((to, from, next) => {
       Vue.axios.get(`${Config.hostAPI}/driver/valid-token`,
         {
           headers: {
-            'x-access-token': jwt.toString()
+            'x-access-token': jwt.toString(),
+            'x-refresh-token': suser.refreshToken
           }
         }).then((res) => {
 

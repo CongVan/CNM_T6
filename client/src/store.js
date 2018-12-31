@@ -7,26 +7,34 @@ export default new Vuex.Store({
     state: {
         user:null,
         jwt:null,
-        isLogin:false 
+        refreshToken:null,
+        isLogin:false,
     },
     getters: {
         getUser:(state)=>{return state.user},
         getToken:(state)=>{return state.jwt},
+        getRefreshToken:(state)=>{return state.refreshToken},
         getStatusLogin:(state)=>{return state.isLogin},
     },
     mutations: {
         "LOGINED":(state,payload)=>{
             state.user=payload.user;
             state.jwt=payload.token;
+            state.refreshToken=payload.refreshToken;
             state.isLogin=true;
         },
         "LOGOUT":(state)=>{
             state.user=null;
             state.jwt=null;
+            state.refreshToken=null;
             state.isLogin=false;
         },
         "UPDATE_STATUS_LOGIN":(state,status)=>{
             state.isLogin=status;
+        },
+        "REFRESH_TOKEN":(state,payload)=>{
+            state.jwt=payload.token;
+            // state.user=payload.user;
         }
     },  
     actions: {
@@ -38,6 +46,9 @@ export default new Vuex.Store({
         },
         updateStatusLogin:(context,status)=>{
             context.commit("UPDATE_STATUS_LOGIN",status);
+        },
+        refreshToken:(context,payload)=>{
+            context.commit("REFRESH_TOKEN",context,payload);
         }
     },
     plugins: [
