@@ -1,0 +1,81 @@
+﻿-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema gocar-db
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema gocar-db
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `gocar-db` DEFAULT CHARACTER SET utf8 ;
+USE `gocar-db` ;
+
+-- -----------------------------------------------------
+-- Table `gocar-db`.`driver`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gocar-db`.`driver` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `user_name` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
+  `password` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
+  `status` INT(11) NULL DEFAULT NULL,
+  `location` VARCHAR(200) NULL DEFAULT NULL,
+  `role` INT(11) NULL DEFAULT NULL,
+  `refreshToken` LONGTEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 6
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_unicode_ci
+COMMENT = 'bảng tài xế';
+
+
+-- -----------------------------------------------------
+-- Table `gocar-db`.`driver_request`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gocar-db`.`driver_request` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `driver_id` INT(11) NULL DEFAULT NULL,
+  `request_id` INT(11) NULL DEFAULT NULL,
+  `date` DATETIME NULL DEFAULT NULL COMMENT 'Thời gian nhận cuốc của tài xế',
+  `status` INT(11) NULL DEFAULT NULL COMMENT 'trạng thái cuốc xe',
+  `direction` VARCHAR(500) NULL DEFAULT NULL COMMENT 'đường đi',
+  `start_time` DATETIME NULL DEFAULT NULL,
+  `end_time` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 55
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_unicode_ci;
+
+
+-- -----------------------------------------------------
+-- Table `gocar-db`.`request`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gocar-db`.`request` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `customer_name` VARCHAR(100) CHARACTER SET 'utf8' NULL DEFAULT NULL COMMENT 'Họ tên khách hàng',
+  `customer_phone` VARCHAR(45) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL,
+  `customer_address` VARCHAR(200) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `note` VARCHAR(500) CHARACTER SET 'utf8' NULL DEFAULT NULL,
+  `confirm_status` INT(11) NULL DEFAULT NULL COMMENT 'default: 1,\\\\\\\\napp2 comfirm: 2,\\\\\\\\napp3 comfirm: 3,\\\\\\\\napp4 comfirm: 4,\\\\\\\\nsussess: 5,\\\\\\\\nfail:-1.',
+  `create_date` DATETIME NULL DEFAULT NULL COMMENT 'Ngày tạo yêu cầu',
+  `location_1` VARCHAR(200) CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci' NULL DEFAULT NULL COMMENT 'app_1 nhập vào địa chỉ => id',
+  `location_2` VARCHAR(200) NULL DEFAULT NULL COMMENT 'app2 geocoding ra location id từ gg map',
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 15
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_unicode_ci
+COMMENT = 'bảng yêu cầu đặt xe của khách hàng';
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
