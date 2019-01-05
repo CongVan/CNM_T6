@@ -26,8 +26,7 @@
                             </li>
 
                         </ul>
-                        
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -69,8 +68,9 @@
                 <div id="myMap" class="card mt-1 rounded" v-show="currAdsress!=null"></div>
             </div>
         </div>
-    </div>
 
+    </div>
+</div>
 </template>
 
 <script>
@@ -194,7 +194,7 @@ export default {
             console.log(locationRequest);
             self.axios.get(`${Config.hostAPI}/driver/get-nearest`, {
                     params: {
-                        locationRequest:locationRequest
+                        locationRequest: locationRequest
                     }
                 })
                 .then(results => {

@@ -5,8 +5,8 @@ var appIo = null;
 var config = require('../config');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.json({status:'oK'})
+router.get('/', function (req, res, next) {
+    res.json({ status: 'oK' })
 });
 
 // module.exports = router;
@@ -38,21 +38,21 @@ router.post('/add-request', (req, res) => {
         .catch(err => {
             res.json({
                 result: -1,
-                msg: ""+err
+                msg: "" + err
             });
         });
 });
 
 router.get('/get-requests', (req, res) => {
-  reqModel.GetRequests().then(rows => {
-      res.statusCode = 200;
-      res.json(rows);
-      // appIo.emit('messageTest',"Server gởi lại 123 123 1");
-  }).catch(err => {
-      console.log(err);
-      res.statusCode = 500;
-      res.end('View error log on server console');
-  });
+    reqModel.GetRequests().then(rows => {
+        res.statusCode = 200;
+        res.json(rows);
+        // appIo.emit('messageTest',"Server gởi lại 123 123 1");
+    }).catch(err => {
+        console.log(err);
+        res.statusCode = 500;
+        res.end('View error log on server console');
+    });
 });
 
 router.get('/get-all-requests', (req, res) => {
@@ -66,17 +66,30 @@ router.get('/get-all-requests', (req, res) => {
     });
 });
 router.get('/search-request', (req, res) => {
-    var phoneNumber=req.query.phoneNumber;
+    var phoneNumber = req.query.phoneNumber;
     reqModel.searchRequest(phoneNumber).then(rows => {
         res.statusCode = 200;
-        res.json({status:1,requests:rows});
+        res.json({ status: 1, requests: rows });
         // appIo.emit('messageTest',"Server gởi lại 123 123 1");
     }).catch(err => {
         // console.log(err);
         // res.statusCode = 500;
-        res.json({status:-1,err:err});
+        res.json({ status: -1, err: err });
     });
-  });
+});
+
+router.get('/check-exsits-request', (req, res) => {
+    var req = req.query.addr;
+    reqModel.checkExistsRequest(req).then(rows => {
+        res.statusCode = 200;
+        res.json({ status: 1, requests: rows });
+        // appIo.emit('messageTest',"Server gởi lại 123 123 1");
+    }).catch(err => {
+        // console.log(err);
+        // res.statusCode = 500;
+        res.json({ status: -1, err: err });
+    });
+});
 router.post('/confirm-location-request', (req, res) => {
     var m = req.body;
     reqModel.ConfirmLocationRequest(m)
@@ -115,10 +128,10 @@ router.post('/update-status-request', (req, res) => {
     var m = req.body;
     reqModel.UpdateStatusRequest(m)
         .then(results => {
-            var check=true;
+            var check = true;
             for (let index = 0; index < results.length; index++) {
-                if(results[index].affectedRows==0){
-                    check=false;
+                if (results[index].affectedRows == 0) {
+                    check = false;
                     break;
                 }
             }
@@ -151,10 +164,10 @@ router.post('/confirm-driver-request', (req, res) => {
     reqModel.ConfirmDriverRequest(m)
         .then(results => {
             // res.json({a:resultsơ});
-            var check=true;
+            var check = true;
             for (let index = 0; index < results.length; index++) {
-                if(results[index].affectedRows==0){
-                    check=false;
+                if (results[index].affectedRows == 0) {
+                    check = false;
                     break;
                 }
             }
@@ -173,7 +186,7 @@ router.post('/confirm-driver-request', (req, res) => {
                 res.json({
                     result: -1,
                     msg: "Thất bại",
-                    results:results
+                    results: results
                 });
             }
 
@@ -181,11 +194,11 @@ router.post('/confirm-driver-request', (req, res) => {
         .catch(err => {
             res.json({
                 result: -1,
-                msg: "Lỗi: "+err
+                msg: "Lỗi: " + err
             });
         });
 });
-module.exports =  function (io) {
+module.exports = function (io) {
     appIo = io;
 
     return router;

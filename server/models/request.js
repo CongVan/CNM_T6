@@ -2,13 +2,28 @@ var connector = require('../connector/db-connector');
 var config = require('../config');
 var moment = require('moment');
 
+exports.checkExistsRequest = (addr) => {
+    return new Promise((resolve, reject) => {
+        var connection = connector.getConnection();
+        connection.connect();
+        var sqlCheck = `SELECT * FROM request WHERE customer_address LIKE '%${addr.trim()}%' AND location_1 IS NOT NULL`
+        connection.query(sqlCheck, (error, results) => {
+            if (error)
+                reject(error);
+            else resolve(results);
+            connection.end();
+        });
+    });
+}
 exports.AddRequest = (m) => {
     return new Promise((resolve, reject) => {
         var connection = connector.getConnection();
         connection.connect();
         var sql = `
-        INSERT INTO request (customer_name, customer_phone, customer_address,note,confirm_status,create_date) 
-        VALUES ('${m.customer_name}', '${m.customer_phone}', '${m.customer_address}','${m.note}',1,'${moment().format('YYYY-MM-DD hh:mm:ss')}')`;
+        INSERT INTO request (customer_name, customer_phone, customer_address,note,confirm_status,create_date,location_1,location_2) 
+        VALUES ('${m.customer_name}', '${m.customer_phone}', '${m.customer_address}','${m.note}',${m.confirm_status},'${moment().format('YYYY-MM-DD hh:mm:ss')}'
+        ,'${m.location_1?m.location_1:''}','${m.location_2?m.location_2:''}'
+        )`;
 
         connection.query(sql, (error, results) => {
             if (error)
@@ -96,14 +111,14 @@ exports.UpdateStatusRequest = (m) => {
         UPDATE request
         SET confirm_status=${m.status}
         where id=${m.requestId};`
-        var time=" ";
-        if(m.status===4 ){
-            time=`,start_time='${moment().format('YYYY-MM-DD hh:mm:ss')}'`;
+        var time = " ";
+        if (m.status === 4) {
+            time = `,start_time='${moment().format('YYYY-MM-DD hh:mm:ss')}'`;
         }
-        if(m.status===5){
-            time=`,end_time='${moment().format('YYYY-MM-DD hh:mm:ss')}'`;
+        if (m.status === 5) {
+            time = `,end_time='${moment().format('YYYY-MM-DD hh:mm:ss')}'`;
         }
-        sql+=`UPDATE driver_request
+        sql += `UPDATE driver_request
         SET status=${m.statusDriving} ${time}
         where driver_id=${m.userId} and request_id=${m.requestId};
         `
