@@ -41,9 +41,12 @@
                 <div class="modal-body">
                     {{confirm.content}}
                 </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary"  @click="NotConfirmRequest">Không nhận</button>
-                    <button type="button" class="btn btn-primary"  @click="ConfirmRequest">Nhận khách</button>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-outline-danger"  @click="NotConfirmRequest">Từ chối</button>
+                    <button type="button" class="btn btn-primary"  @click="ConfirmRequest">Nhận khách 
+                        <span class="badge badge-danger ml-2 p-1"> {{countTime}} </span>
+                        <span class="sr-only">unread messages</span></button>
+                        <!-- <span class="white-text font-weight-bold "> {{countTime}}</span></button> -->
                 </div>
             </div>
         </div>
@@ -94,7 +97,7 @@ export default {
                 cancel: 'Không'
             },
             currentRequest: null,
-
+            countTime:5 //5s
         };
     },
     sockets: {
@@ -129,13 +132,17 @@ export default {
 
                 self.confirm.active = true;
                 // document.getElementById('modalDetailRequest').show();
-                var count = 5;
-                self.countDown = setTimeout(() => {
-                    count--;
-                    if (count == 0) {
+                
+                self.countDown = setInterval(() => {
+                    self.countTime--;
+                    if(self.countTime<=0){
+                        clearInterval(self.countDown);
+                        self.countTime=5;
                         self.NotConfirmRequest();
-                        // clearTimeout(self.countDown);
                     }
+                    
+                    // clearTimeout(self.countDown);
+
                 }, 1000)
             }
 
@@ -526,10 +533,12 @@ export default {
         },
         ConfirmRequest() {
             var self = this;
-            clearTimeout(self.countDown);
+            clearInterval(self.countDown);
+            self.countTime=5;
             self.confirm.active = false;
             self.user.status = 2; //busy
-            document.getElementById('modalDetailRequest').hide();
+            // document.getElementById('modalDetailRequest').hide();
+            // clearTimeout(self.countDown);
             // document.getElementById('btnConfirm').click();
             self.axios.post(`${Config.hostAPI}/request-receiver/confirm-driver-request`, {
                     requestId: self.currentRequest.id,
@@ -551,7 +560,10 @@ export default {
         NotConfirmRequest() {
             var self = this;
             // clearTimeout(self.countDown);
+            clearInterval(self.countDown);
+            self.countTime=5;
             self.confirm.active = false;
+            // clearTimeout(self.countDown);
             // document.getElementById('modalDetailRequest').hide();
             self.axios.post(`${Config.hostAPI}/request-receiver/confirm-driver-request`, {
                     requestId: self.currentRequest.id,
@@ -581,10 +593,12 @@ export default {
     padding-right: 15px;
     display: block;
 }
-.showModal{
+
+.showModal {
     display: block;
 
 }
+
 #myMap {
     /* position: relative; */
     /* height: 100% ; */

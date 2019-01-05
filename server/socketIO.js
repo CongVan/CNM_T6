@@ -81,8 +81,8 @@ var findDriver = async (req, range, lstUserNotConfirm) => {
                 .then(drivers => {
                     console.log('getDriverOnline', drivers.length);
                     if (drivers.length > 0) {
-                        var origin = req.location_1?JSON.parse(req.location_1):JSON.parse(req.location_2);
-                        console.log('REQUEST',req);
+                        var origin = req.location_1 ? JSON.parse(req.location_1) : JSON.parse(req.location_2);
+                        console.log('REQUEST', req);
                         var origins = [`${origin.lat},${origin.lng}`];
                         // console.log(origins);
                         var destinations = [];
@@ -133,29 +133,31 @@ var findDriver = async (req, range, lstUserNotConfirm) => {
 
                                         }
                                         var driverSocketId = clientDB.getClientByUserId(drivers[min].id);
-                                         console.log('id find driver',driverSocketId,' id driver',drivers[min].id);
+                                        console.log('id find driver', driverSocketId, ' id driver', drivers[min].id);
                                         if (driverSocketId) {
                                             var i = 1;
                                             // var time = setTimeout(() => {
                                             io.sockets.connected[driverSocketId].emit('ReceiverRequest', ret);
                                             console.log('timeout', 'gọi check confirm');
-                                            driver.checkStatusConfirm(req.id, drivers[min].id)
-                                                .then((check) => {
-                                                    console.log('check', check);
-                                                    // clearTimeout(time);
-                                                    if (check == true) {
-                                                        res(ret);
-                                                    } else {
 
-                                                        res({
-                                                            result: -1,
-                                                            msg: "Tài xế không xác nhận",
-                                                        });
-                                                    }
-                                                }).catch(err => {
-                                                    // clearTimeout(time);
-                                                    rej(err);
-                                                });
+                                            var time = setTimeout(() => {
+                                                driver.checkStatusConfirm(req.id, drivers[min].id)
+                                                    .then((check) => {
+                                                        console.log('check', check);
+                                                        clearTimeout(time);
+                                                        if (check == true) {
+                                                            res(ret);
+                                                        } else {
+                                                            res({
+                                                                result: -1,
+                                                                msg: "Tài xế không xác nhận",
+                                                            });
+                                                        }
+                                                    }).catch(err => {
+                                                        // clearTimeout(time);
+                                                        rej(err);
+                                                    });
+                                            }, 5000);
                                             // }, config.delayTime * 1000);
 
                                             // io.to(`${driverSocketId}`).emit('ReceiverRequest', ret, function(confirm) {
