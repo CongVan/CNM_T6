@@ -33,6 +33,7 @@ export default new Vuex.Store({
             state.isLogin=status;
         },
         "REFRESH_TOKEN":(state,payload)=>{
+            console.log('ROUTER REFRESH TOKEN',payload);
             state.jwt=payload.token;
             // state.user=payload.user;
         }
@@ -48,7 +49,7 @@ export default new Vuex.Store({
             context.commit("UPDATE_STATUS_LOGIN",status);
         },
         refreshToken:(context,payload)=>{
-            context.commit("REFRESH_TOKEN",context,payload);
+            context.commit("REFRESH_TOKEN",payload);
         }
     },
     plugins: [

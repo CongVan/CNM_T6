@@ -21,11 +21,12 @@
                             <span><i class="fa fa-address-book-o text-info mr-1"></i>{{req.customer_address}} </span>
                         </a>
                     </div>
-                    <div class="d-flex justify-content-end ">
-                        <button class="btn btn-link btn-sm shadow" @click="loadDetailRequest(req)" data-toggle="modal" data-target="#modalDetailRequest">Chi tiết</button>
+                <div class="d-flex justify-content-end " >
+                        <button class="btn btn-link btn-sm shadow" @click="loadDetailRequest(req)" data-toggle="modal" data-target="#modalDetailRequest" >Chi tiết</button>
                         <button class="btn btn-indigo btn-sm waves-effect waves-light" v-if="req.confirm_status==2" @click="findDriver(req)">Tìm tài xế</button>
-                    </div>
+                    </div>    
                 </div>
+
             </div>
         </div>
     </div>
@@ -124,7 +125,7 @@ export default {
             this.lstRequest = data;
         }
     },
-
+    
     created() {
         this.getLocation();
         this.$socket.close();

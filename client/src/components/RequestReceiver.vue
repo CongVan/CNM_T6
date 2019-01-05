@@ -112,6 +112,7 @@ export default {
                             position: "top-center",
                             duration: Config.notificationTime
                         });
+                        self.prefreshForm()
                         // alert(res.data.msg);
                         // this.$socket.emit('SendingRequest',self.currRequest);
                     })
@@ -135,6 +136,7 @@ export default {
             this.request.customer_name = '';
             this.request.customer_phone = '';
             this.request.customer_address = '';
+            this.request.note=''
         }
     }
 }

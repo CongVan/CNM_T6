@@ -81,9 +81,10 @@ var findDriver = async (req, range, lstUserNotConfirm) => {
                 .then(drivers => {
                     console.log('getDriverOnline', drivers.length);
                     if (drivers.length > 0) {
-                        var origin = JSON.parse(req.location_1);
+                        var origin = req.location_1?JSON.parse(req.location_1):JSON.parse(req.location_2);
+                        console.log('REQUEST',req);
                         var origins = [`${origin.lat},${origin.lng}`];
-                        console.log(origins);
+                        // console.log(origins);
                         var destinations = [];
                         drivers.forEach(d => {
                             var des = `${JSON.parse(d.location).lat},${JSON.parse(d.location).lng}`;

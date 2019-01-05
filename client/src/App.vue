@@ -1,13 +1,13 @@
 <template>
 <div id="app">
     <!--Navbar-->
-    <nav class="navbar navbar-expand-lg navbar-dark  indigo darken-2">
+    <nav class="navbar navbar-expand-lg navbar-dark  blue accent-3">
         <!-- Navbar brand -->
         <a
         class="navbar-brand active"
         href="#"
       >
-        Danh sách APP
+        Menu
       </a>
 
         <!-- Collapse button -->
@@ -28,22 +28,22 @@
             <!-- Links -->
             <ul class="navbar-nav mr-auto">
                 <RouterLink tag="li" to="/ghi-nhan-yeu-cau" class="nav-item " active-class="active">
-                    <a class="nav-link text-capitalize ">
+                    <a class="nav-link text-capitalize rounded">
               <i class="fa fa-paper-plane-o" /> ghi nhận yêu cầu
             </a>
                 </RouterLink>
                 <RouterLink tag="li" to="/xac-nhan-vi-tri" class="nav-item " active-class="active">
-                    <a class="nav-link text-capitalize">
+                    <a class="nav-link text-capitalize rounded">
               <i class="fa fa-map-marker" /> Xác nhận vị trí
             </a>
                 </RouterLink>
                 <RouterLink tag="li" to="/quan-ly-yeu-cau" class="nav-item " active-class="active">
-                    <a class="nav-link text-capitalize">
+                    <a class="nav-link text-capitalize rounded">
               <i class="fa fa-th" /> quản lý yêu cầu
             </a>
                 </RouterLink>
                 <RouterLink tag="li" to="/tai-xe" class="nav-item " active-class="active">
-                    <a class="nav-link text-capitalize">
+                    <a class="nav-link text-capitalize rounded">
               <i class="fa fa-motorcycle" /> tài xế
             </a>
                 </RouterLink>
@@ -54,12 +54,12 @@
               <i class="fa fa-sign-out" /> Đăng Xuất
             </a>
                 </li> -->
-                <li class="nav-item dropdown ml-md-auto font-weight-bold" v-if="isLogin">
+                <li class="nav-item dropdown ml-md-auto font-weight-bold " v-if="isLogin">
                     <a class="nav-link dropdown-toggle waves-effect waves-light" id="navbarDropdownMenuLink-4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     <i class="fa fa-user-o "></i> {{user.user_name}} </a>
-                    <div class="dropdown-menu dropdown-menu-right dropdown-info" aria-labelledby="navbarDropdownMenuLink-4">
+                    <div class="dropdown-menu dropdown-menu-right shadow border-0 dropdown-info px-2 mx-2" aria-labelledby="navbarDropdownMenuLink-4">
                         <!-- <a class="dropdown-item waves-effect waves-light" href="#">My account</a> -->
-                        <a class="dropdown-item waves-effect waves-light" href="javascript:;" @click="logOut"><i class="fa fa-sign-out" /> Đăng Xuất</a>
+                        <a class="dropdown-item waves-effect waves-light rounded" href="javascript:;" @click="logOut"><i class="fa fa-sign-out" /> Đăng Xuất</a>
                     </div>
                 </li>
             </ul>
@@ -95,11 +95,13 @@ export default {
         // var user = localStorage.getItem('user');
         // var jwt = localStorage.getItem('jwt');
         var jwt = self.$store.getters.getToken;
+        var refreshToken=self.$store.getters.getRefreshToken;
         // console.log(user);
         // console.log(jwt);
         axios.get(`${Config.hostAPI}/driver/valid-token`, {
                 headers: {
-                    'x-access-token': jwt
+                    'x-access-token': jwt,
+                    'x-refresh-token':refreshToken
                 }
             }).then((res) => {
                 // console.log(res);
@@ -148,8 +150,10 @@ export default {
 
 .dropdown-item:focus,
 .dropdown-item:hover {
-    background-color: #3d3393;
+    /* transition: all .25s ease-in; */
+    background-color: #2196f3;
     color: #fff !important;
     box-shadow: 0 5px 11px 0 rgba(0, 0, 0, .18), 0 4px 15px 0 rgba(0, 0, 0, .15);
 }
+
 </style>

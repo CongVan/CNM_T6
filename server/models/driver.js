@@ -1,6 +1,8 @@
 
 var connector = require('../connector/db-connector');
-
+var distance = require('google-distance-matrix');
+var config = require('../config');
+distance.key(config.keyMap);
 exports.Login = (driver) => {
     return new Promise((resolve, reject) => {
         var connection = connector.getConnection();
@@ -85,7 +87,7 @@ exports.online = (driver) => {
         UPDATE driver
         SET status='${driver.status}', location='${driver.location}' 
         where id=${driver.id}`;
-         console.log(sql);
+        console.log(sql);
         connection.query(sql, (error, results) => {
 
             if (error)
@@ -163,5 +165,57 @@ exports.checkRefreshToken = (rToken, ) => {
             }
             connection.end();
         });
+    });
+}
+
+exports.getNearest = (locationRequest) => {
+    // console.log(locationRequest);
+    return new Promise((res, rej) => {
+        this.getDriverOnline()
+            .then(drivers => {
+                var origin = [`${locationRequest.lat},${locationRequest.lng}`];
+                var destinations = [];
+                drivers.forEach(d => {
+                    var des = `${JSON.parse(d.location).lat},${JSON.parse(d.location).lng}`;
+                    destinations.push(des);
+                });
+                distance.matrix(origins, destinations, function (err, distances) {
+                    if (err) {
+                        res({
+                            result: -1,
+                            msg: err,
+                        })
+                    }
+                    if (distances == null || distances === undefined) {
+                        res({
+                            result: -1,
+                            msg: "Không thể kết nối google map",
+                        });
+                    }
+                    try {
+                        if (distances.status == 'OK') {
+                            if (distances.rows[0].elements.length > 0) {
+                                res.json({
+                                    status: 1,
+                                    data: distances.rows[0]
+                                })
+                            } else {
+                                res({
+                                    result: -1,
+                                    msg: "Không tìm thấy đường đi",
+                                });
+                            }
+                        }
+                    } catch (error) {
+                        rej({
+                            result: -1,
+                            msg: "" + error
+                        })
+                    }
+                });
+
+            }).catch(err => {
+
+            })
     });
 }

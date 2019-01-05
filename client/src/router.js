@@ -66,35 +66,45 @@ var router = new Router({
   ]
 });
 router.beforeEach((to, from, next) => {
+  console.log(to.name);
   if (to.matched.some(record => record.meta.auth)) {
     var jwt = store.getters.getToken;
-    // var refreshToken=store.getters.getRefreshToken;
+   var refreshToken=store.getters.getRefreshToken;
     var suser = store.getters.getUser;
     console.log('router', suser);
     // console.log('store', jwt);
     if (jwt == null) {
+      console.log('CHECK LOGIN',suser,to.name);
+      store.dispatch("logout");
       next({
         name: 'Login',
         path: '/dang-nhap',
         params: { 'nextUrl': to.fullPath }
       })
     } else {
+      
       Vue.axios.get(`${Config.hostAPI}/driver/valid-token`,
         {
           headers: {
-            'x-access-token': jwt.toString(),
-            'x-refresh-token': suser.refreshToken
+            'x-access-token': jwt,
+            'x-refresh-token': refreshToken
           }
         }).then((res) => {
-
+          console.log('LOGIN',res.data);
           if (res.data.status == 1) {
             var user = suser;
-            document.title=to.meta.title;
+            if(res.data.jwt){
+              store.dispatch("refreshToken", res.data.jwt);
+            }
+            
+            
             next(user.role == 1 && to.name == "RequestReceiver" ? true :
               user.role == 2 && to.name == "LocationIdentifier" ? true :
                 user.role == 3 && to.name == "RequestManagement" ? true :
                   user.role == 4 && to.name == "Driver" ? true : false);
+                  document.title=to.meta.title;
           } else {
+            // console.log('CHECK LOGIN');
             next({
               name: 'Login',
               path: '/dang-nhap',
@@ -109,6 +119,9 @@ router.beforeEach((to, from, next) => {
         });
     }
   } else {
+    if(to.name=='Login'){
+      store.dispatch("logout");
+    }
     // var user = JSON.parse(localStorage.getItem('user'));
     next();
   }

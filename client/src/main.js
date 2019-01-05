@@ -10,7 +10,11 @@ import VueSocketIO from 'vue-socket.io';
 
 Vue.config.productionTip = false
 Vue.use(VueAxios, axios);
+axios.defaults.headers.post['x-access-token'] = store.getters.getUser?store.getters.getToken:""; // for POST requests
+axios.defaults.headers.common['x-access-token'] = store.getters.getUser?store.getters.getToken:""; // for all requests
 
+axios.defaults.headers.post['x-refresh-token'] = store.getters.getUser?store.getters.getRefreshToken:""; // for POST requests
+axios.defaults.headers.common['x-refresh-token'] = store.getters.getUser?store.getters.getRefreshToken:""; // for all requests
 // const instane  = axios.create({
 //   headers: {
 //     'x-access-token': store.getters.getUser?store.getters.getToken:""
@@ -38,7 +42,7 @@ new Vue({
   sockets: {
     refreshToken: function (token) {
       console.log(token);
-      store.dispatch('refreshToken', {token:token});
+      store.dispatch('refreshToken', token);
     }
   },
   mounted() {

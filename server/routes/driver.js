@@ -5,6 +5,8 @@ var jwt = require('jsonwebtoken');
 var config = require('../config');
 var token = require('../oauth');
 var randtoken = require('rand-token');
+var clientDB = require('../models/clientDB');
+var io=require('../socketIO');
 /* GET home page. */
 router.get('/', function (req, res, next) {
     res.json({ status: 'oK' })
@@ -58,13 +60,14 @@ router.get('/valid-token' ,function (req, res, next) {
                             var token = jwt.sign(pl, config.secret, { expiresIn: config.expiredJWT });
                             // req.newToken = token;
                             // console.log('check' ,results);
-                             var socketId=clientDB.getClientByUserId(results[0].id);
+                            //  var socketId=clientDB.getClientByUserId(results[0].id);
                             //  console.log(socketId, results[0].id);
                             
-                            io.sockets.connected[socketId].emit('refreshToken', {token:token});
+                            // io.sockets.connected[socketId].emit('refreshToken', {token:token});
                             res.json({
                                 status:1,
-                                msg:"OK"
+                                msg:"OK",
+                                jwt:token
                             })
                         }else{
                             res.json({
@@ -256,7 +259,20 @@ router.post('/update-location',token.verifyAccessToken, (req, res) => {
             });
         });
 });
-
+router.get('/get-nearest',(req,res)=>{
+    var locationRequest=req.query.locationRequest;
+    console.log(locationRequest);
+    console.log(req.query);
+    driverModel.getNearest(locationRequest)
+    .then(results=>{
+        res.json(results);
+    }).catch(err=>{
+        res.json({
+            result: -1,
+            msg: err
+        });
+    })
+});
 
 
 module.exports = router;

@@ -54,10 +54,10 @@
 <script>
 import Config from '@/config'
 import GoogleMapsLoader from 'google-maps'
-import {
-    setTimeout,
-    clearTimeout
-} from 'timers'
+// import {
+//     setTimeout,
+//     clearTimeout
+// } from 'timers'
 export default {
     name: "Driver",
     data() {
@@ -127,12 +127,12 @@ export default {
 
                 self.confirm.active = true;
                 document.getElementById('btnConfirm').click();
-                var count = 10;
+                var count = 5;
                 self.countDown = setTimeout(() => {
                     count--;
                     if (count == 0) {
-                        clearTimeout(self.countDown);
                         self.NotConfirmRequest();
+                        // clearTimeout(self.countDown);
                     }
                 }, 1000)
             }
@@ -545,6 +545,22 @@ export default {
                     console.log(err);
                 })
         },
+        NotConfirmRequest() {
+            var self = this;
+            // clearTimeout(self.countDown);
+            self.confirm.active = false;
+            document.getElementById('btnConfirm').click();
+            self.axios.post(`${Config.hostAPI}/request-receiver/confirm-driver-request`, {
+                    requestId: self.currentRequest.id,
+                    driverId: self.user.id,
+                    status: false
+                })
+                .then(results => {
+                    console.log(results);
+                }).catch(err => {
+                    console.log(err);
+                })
+        }
     }
 };
 </script>
