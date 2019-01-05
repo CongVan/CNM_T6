@@ -65,6 +65,18 @@ router.get('/get-all-requests', (req, res) => {
         res.end('View error log on server console');
     });
 });
+router.get('/search-request', (req, res) => {
+    var phoneNumber=req.query.phoneNumber;
+    reqModel.searchRequest(phoneNumber).then(rows => {
+        res.statusCode = 200;
+        res.json({status:1,requests:rows});
+        // appIo.emit('messageTest',"Server gởi lại 123 123 1");
+    }).catch(err => {
+        // console.log(err);
+        // res.statusCode = 500;
+        res.json({status:-1,err:err});
+    });
+  });
 router.post('/confirm-location-request', (req, res) => {
     var m = req.body;
     reqModel.ConfirmLocationRequest(m)
@@ -178,3 +190,4 @@ module.exports =  function (io) {
 
     return router;
 }
+

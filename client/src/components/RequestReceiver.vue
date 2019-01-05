@@ -58,7 +58,7 @@
           </div>
         </div>
         <div class="col-md-4 col-sm-12 card">
-          <div class="card-body">
+          <div class="card-body px-1 ">
             <h4 class="text-center text-uppercase mb-4 text-primary">Lịch sử yêu cầu</h4>
             <div class="form-inline md-form form-sm mt-0">
               <i class="fa fa-search" aria-hidden="true"></i>
@@ -67,27 +67,42 @@
                 type="text"
                 placeholder="Search"
                 aria-label="Search"
+                v-model="searchQuery"
+                @keyup.enter="searchRequest()"
+                
               >
             </div>
-          </div>
-          <div class="col-md-12 rounded p-1 card mb-2">
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item p-1">
-                <div class="md-v-line"></div>
-                <i class="fa fa-clock-o mr-3"></i> 123
-                <strong class="ml-2 float-right">
-                  <i class="fa fa-phone"/> 123
-                </strong>
-              </li>
-              <li class="list-group-item p-1">
-                <div class="md-v-line"></div>
-                <i class="fa fa-user-circle-o mr-3"></i>123
-              </li>
-              <li class="list-group-item p-1">
-                <div class="md-v-line"></div>
-                <i class="fa fa-address-book-o mr-3"></i>123
-              </li>
-            </ul>
+            <div class="content-history pr-2">
+              <div
+                v-for=" req in lstRequestHistory"
+                :key="req.id"
+                :id="'item'+req.id"
+                class="rounded p-1 card mb-3"
+                
+              >
+                <ul class="list-group list-group-flush" @mousemove="hoverListRequestHandle(req)">
+                  <li class="list-group-item p-1"  :class="{'active':activeRequest(req.id)}">
+                    <div class="md-v-line"></div>
+                    <i class="fa fa-clock-o mr-3"></i>
+                    {{ req.create_date }}
+                    <strong class="ml-2 float-right">
+                      <i class="fa fa-phone"/>
+                      {{ req.customer_phone }}
+                    </strong>
+                  </li>
+                  <li class="list-group-item p-1">
+                    <div class="md-v-line"></div>
+                    <i class="fa fa-user-circle-o mr-3"></i>
+                    {{ req.customer_name }}
+                  </li>
+                  <li class="list-group-item p-1">
+                    <div class="md-v-line"></div>
+                    <i class="fa fa-address-book-o mr-3"></i>
+                    {{ req.customer_address }}
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -106,7 +121,10 @@ export default {
         customer_phone: "",
         customer_address: "",
         note: ""
-      }
+      },
+      lstRequestHistory: [],
+      searchQuery: "",
+      selectedRequest:null
     };
   },
   sockets: {
@@ -163,10 +181,48 @@ export default {
       this.request.customer_phone = "";
       this.request.customer_address = "";
       this.request.note = "";
+    },
+    searchRequest() {
+      var self = this;
+      self.axios
+        .get(`${Config.hostAPI}/request-receiver/search-request`, {
+          params: {
+            phoneNumber: self.searchQuery
+          }
+        })
+        .then(results => {
+          if (results.data.status == 1) {
+            self.lstRequestHistory = results.data.requests;
+          } else {
+            self.$toasted.show("Không tìm thấy yêu cầu! ", {
+              theme: "bubble",
+              position: "top-center",
+              duration: Config.notificationTime
+            });
+          }
+        })
+        .catch(err => {
+          self.$toasted.show("Lỗi tìm kiếm yêu cầu" + err, {
+            theme: "bubble",
+            position: "top-center",
+            duration: Config.notificationTime
+          });
+        });
+    },
+    hoverListRequestHandle(req){
+        var self=this;
+        self.selectedRequest=req;
+    },
+    activeRequest(id){
+        return  this.selectedRequest?id==this.selectedRequest.id:false;
     }
   }
 };
 </script>
 
 <style>
+.content-history {
+  max-height: 60vh;
+  overflow: auto;
+}
 </style>
