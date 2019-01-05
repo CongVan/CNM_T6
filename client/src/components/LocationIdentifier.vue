@@ -26,18 +26,7 @@
                             </li>
 
                         </ul>
-                        <!-- <p class="dark-grey-text mb-0 ">
-                            <strong><i class="fa fa-clock-o" /> {{ req.create_date }}</strong>
-                            <strong class="ml-2 float-right text-primary">
-                  <i class="fa fa-phone" /> {{ req.customer_phone }}
-                </strong>
-                        </p>
-                        <a>
-                <span><i class="fa fa-user-circle-o text-info mr-1" />{{ req.customer_name }}</span><br>
-                <span><i class="fa fa-address-book-o text-info mr-1" />{{ req.customer_address }}</span>
-              </a> -->
-                        <div class="d-flex justify-content-between">
-                            <!-- <span><i class="fa fa-sticky-note-o text-info mr-1"></i> <span>{{req.note}}</span></span> -->
+                        
                         </div>
                     </div>
                 </div>
