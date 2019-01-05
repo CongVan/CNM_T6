@@ -8,6 +8,6 @@ module.exports={
     'minRange':9000,
     'stepRange':500,
     'delayTime':5,//second
-    'expiredJWT':10,
+    'expiredJWT':86400,
     'expiredRefreshToken':1000
 };

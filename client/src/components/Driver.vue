@@ -28,22 +28,22 @@
         </div>
     </div>
     <button id="btnConfirm" class="btn btn-primary btn-sm float-right mx-0 waves-effect waves-light " hidden data-toggle="modal" data-target="#modalDetailRequest">Xác nhận</button>
-    <div class="modal fade right" id="modalDetailRequest" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade right" id="modalDetailRequest" :class="{'showModal show':confirm.active}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
         <div class="modal-dialog " role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title w-100" id="myModalLabel">{{confirm.title}}</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
-          </button>
+          </button> -->
                 </div>
                 <div class="modal-body">
                     {{confirm.content}}
                 </div>
                 <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Không nhận</button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" @click="ConfirmRequest">Nhận khách</button>
+                    <button type="button" class="btn btn-secondary"  @click="NotConfirmRequest">Không nhận</button>
+                    <button type="button" class="btn btn-primary"  @click="ConfirmRequest">Nhận khách</button>
                 </div>
             </div>
         </div>
@@ -123,10 +123,12 @@ export default {
             var self = this;
             if (self.confirm.active == false && self.user.status == 1) {
                 self.currentRequest = result.data.request;
-                self.confirm.content = `Có khách hàng tại vị trí ${self.currentRequest.customer_address} bạn có muốn nhận?`;
+                self.confirm.content = `Có khách hàng tại vị trí ${self.currentRequest.customer_address} bạn có muốn nhận?
+                   Liên hệ: ${self.currentRequest.customer_name}
+                `;
 
                 self.confirm.active = true;
-                document.getElementById('btnConfirm').click();
+                // document.getElementById('modalDetailRequest').show();
                 var count = 5;
                 self.countDown = setTimeout(() => {
                     count--;
@@ -527,7 +529,8 @@ export default {
             clearTimeout(self.countDown);
             self.confirm.active = false;
             self.user.status = 2; //busy
-            document.getElementById('btnConfirm').click();
+            document.getElementById('modalDetailRequest').hide();
+            // document.getElementById('btnConfirm').click();
             self.axios.post(`${Config.hostAPI}/request-receiver/confirm-driver-request`, {
                     requestId: self.currentRequest.id,
                     driverId: self.user.id,
@@ -549,7 +552,7 @@ export default {
             var self = this;
             // clearTimeout(self.countDown);
             self.confirm.active = false;
-            document.getElementById('btnConfirm').click();
+            // document.getElementById('modalDetailRequest').hide();
             self.axios.post(`${Config.hostAPI}/request-receiver/confirm-driver-request`, {
                     requestId: self.currentRequest.id,
                     driverId: self.user.id,
@@ -578,7 +581,10 @@ export default {
     padding-right: 15px;
     display: block;
 }
+.showModal{
+    display: block;
 
+}
 #myMap {
     /* position: relative; */
     /* height: 100% ; */
