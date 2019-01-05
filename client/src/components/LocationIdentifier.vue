@@ -26,7 +26,8 @@
                             </li>
 
                         </ul>
-                        
+                        <div class="d-flex justify-content-between">
+                            <!-- <span><i class="fa fa-sticky-note-o text-info mr-1"></i> <span>{{req.note}}</span></span> -->
                         </div>
                     </div>
                 </div>
