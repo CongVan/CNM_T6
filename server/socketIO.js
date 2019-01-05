@@ -35,46 +35,52 @@ var sendingRequest = (req) => {
     var reqNumber = parseInt(config.reqNumber);
     // console.log(`reqNu bmber`,reqNumber);
     var count = 0;
-    var fn = setInterval(async () => {
+    var lstUserNotConfirm = [];
+    var fn = () => {// setInterval(async
         count++;
         var range = config.minRange + count * config.stepRange;//meter
-        var lstUserNotConfirm = [];
         console.log('gọi tìm tài xế: ' + count, reqNumber, count < reqNumber);
         findDriver(req, range, lstUserNotConfirm)
             .then(results => {
                 // var r = results.affectedRows;
-                console.log('Kết quả tìm tài xế', results);
-                if (results.result == 1) {
-                    clearInterval(fn);
+                // console.log('Kết quả tìm tài xế', results);
+                if (results.result == 1) {//tim thay tai xe
+                    // clearInterval(fn);
                     console.log(results.data);
-                } else {
+                } else {//k tim thay tai xe
                     if (count <= reqNumber) {
                         // setInterval(fn, count * 1000);
                         if (results.userNotConfirm) {
                             lstUserNotConfirm.push(userNotConfirm);
                         }
                     } else {
-                        clearInterval(fn);
+                        setTimeout(() => {
+                            fn();
+                        }, 5000);
+                        // clearInterval(fn);
                         console.log(results);
                     }
                     // return;
                 }
             })
             .catch(err => {
-                clearInterval(fn);
+                // clearInterval(fn);
                 console.log({
                     result: -1,
                     msg: err
                 });
             });
 
-    }, count * 1000 + 2000);//delay 5s
-    // setInterval(fn,1000);
+        // }, count * 1000 + 2000);//delay 5s
+        // setInterval(fn,1000);
 
-    // });
+        // });
+      
+    }
+    fn();
 }
-var findDriver = async (req, range, lstUserNotConfirm) => {
-    return await new Promise((res, rej) => {
+var findDriver = (req, range, lstUserNotConfirm) => { //async
+    return new Promise((res, rej) => { //await
         console.log(req);
         if (req != null) {
             driver.getDriverOnline(lstUserNotConfirm)

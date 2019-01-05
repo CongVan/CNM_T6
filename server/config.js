@@ -2,7 +2,7 @@ module.exports={
     'secret':'SECRET_KEY',
     'secretRefresh':'SECRET_KEY_REFRESH',
     'keyMap':'AIzaSyBVXo0bnqRZwCW0kups3AFnu9LIuSWLwnA',
-    'reqNumber':2,
+    'reqNumber':3,
     'roomAdmin':"Admin",
     'roomDriver':"Driver",
     'minRange':9000,
