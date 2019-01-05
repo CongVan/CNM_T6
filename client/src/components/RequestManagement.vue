@@ -23,7 +23,7 @@
                     </div>
                 <div class="d-flex justify-content-end " >
                         <button class="btn btn-link btn-sm shadow" @click="loadDetailRequest(req)" data-toggle="modal" data-target="#modalDetailRequest" >Chi tiết</button>
-                        <button class="btn btn-indigo btn-sm waves-effect waves-light" v-if="req.confirm_status==2" @click="findDriver(req)">Tìm tài xế</button>
+                        <!-- <button class="btn btn-indigo btn-sm waves-effect waves-light" v-if="req.confirm_status==2" @click="findDriver(req)">Tìm tài xế</button> -->
                     </div>    
                 </div>
 
